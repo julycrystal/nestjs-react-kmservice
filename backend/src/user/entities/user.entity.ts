@@ -61,6 +61,13 @@ export class User extends CoreEntity {
     @Type(() => String)
     bio: string;
 
+    @Field(() => String)
+    @Column({ nullable: true })
+    @IsString()
+    @IsOptional()
+    @Type(() => String)
+    picture: string;
+
     @BeforeInsert()
     async createUsername () {
         if (this.name) {
