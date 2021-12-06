@@ -21,14 +21,7 @@ export const userModelStub = () => {
         "username": "kaungmyat1636194685444",
         "name": "Something updated",
         "email": "kokaung@gmail.com",
-        verified: false,
-        posts: [],
+        "password": "1212",
         "role": UserRole.User,
-        password: "",
-        createUsername: async () => { },
-        checkPassword: async () => { return true; },
-        hashPassword: async () => { },
-        comments: [],
-        bio: "",
     } as User;
-}
+};
