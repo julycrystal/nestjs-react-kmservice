@@ -18,8 +18,11 @@ export class AuthGuard implements CanActivate {
         if (!roles) {
             return true;
         }
+        const request = context.switchToHttp().getRequest();
         const gqlContext = GqlExecutionContext.create(context).getContext();
-        const token = gqlContext.token;
+        const restToken = request.headers['x-jwt'];
+        const gqlToken = gqlContext.token;
+        const token = gqlToken || restToken;
         if (token) {
             try {
                 const decodedToken = this.jwtService.verify(token);
