@@ -13,6 +13,8 @@ import { UpdateUserInput, UpdateUserOutput } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { VerifyEmailInput, VerifyEmailOutput } from './dto/verify-email.dto';
+import { UploadProfilePictureOutput } from './dto/upload-profile-picture.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -23,6 +25,7 @@ export class UserService {
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
     private readonly jwtService: JwtService,
+    private configService: ConfigService
   ) { }
 
   async register (createUserDto: CreateUserInput): Promise<CreateUserOutput> {
@@ -253,6 +256,31 @@ export class UserService {
       return {
         ok: false,
         error: "Email Verification Failed"
+      }
+    }
+  }
+
+  async uploadProfilePicture (
+    authUser: User,
+    filename: string
+  ): Promise<UploadProfilePictureOutput> {
+    try {
+      const user = await this.usersRepository.findOne({ id: authUser.id })
+      if (!user) {
+        throw new HttpException('User not found.', HttpStatus.BAD_REQUEST)
+      }
+      if (user.id !== authUser.id) {
+        throw new HttpException('Permission denied..', HttpStatus.UNAUTHORIZED)
+      }
+      user.picture = this.configService.get('END_POINT') + `/profile/${filename}`;
+      await this.usersRepository.save(user);
+      return {
+        ok: true,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: "Cannot upload profile picture."
       }
     }
   }
