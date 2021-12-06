@@ -1,77 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, UploadedFile, Logger, Inject } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserInput, CreateUserOutput } from './dto/create-user.dto';
-import { UpdateUserInput, UpdateUserOutput } from './dto/update-user.dto';
-import { GetUserInput, GetUserOutput } from './dto/get-user.dto';
-import { LoginInput, LoginOutput } from './dto/login.dto';
-import { Role } from '../auth/role.decorator';
-import { AuthUser } from '../auth/auth-user.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { Role } from 'src/auth/role.decorator';
+import { AuthUser } from 'src/auth/auth-user.decorator';
 import { User } from './entities/user.entity';
-import { ChangePasswordInput, changePasswordOutput } from './dto/change-password.dto';
-import { GetUsersOutput } from './dto/get-users.dto';
-import { DeleteUserOutput } from './dto/delete-user.dto';
-import { MyProfileOutput } from './dto/my-profile.dto';
-import { VerifyEmailInput, VerifyEmailOutput } from './dto/verify-email.dto';
+import { UploadProfilePictureOutput } from './dto/upload-profile-picture.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(
+    private readonly usersService: UserService,
+  ) { }
 
-  @Post('/register')
-  register (@Body() createUserDto: CreateUserInput): Promise<CreateUserOutput> {
-    return this.userService.register(createUserDto);
+  @Role(['Admin', 'User'])
+  @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: '../uploads/profile',
+        filename: (req, file, callback) => {
+          const name = file.originalname.split('.')[0];
+          const fileExtName = extname(file.originalname);
+          const randomName = Array(4)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          callback(null, `${name}-${randomName}${fileExtName}`);
+        },
+      }),
+    }),
+  )
+  async upload (
+    @AuthUser() user: User,
+    @UploadedFile() file: Express.Multer.File
+  ): Promise<UploadProfilePictureOutput> {
+    return this.usersService.uploadProfilePicture(user, file.filename)
   }
 
-
-  @Post('login')
-  login (@Body() loginDto: LoginInput): Promise<LoginOutput> {
-    return this.userService.login(loginDto);
-  }
-
-  @Get()
-  @Role(['Admin'])
-  findAll (): Promise<GetUsersOutput> {
-    return this.userService.findAll();
-  }
-
-  @Get('profile')
-  @Role(['User', 'Admin'])
-  myProfile (@AuthUser() user: User): Promise<MyProfileOutput> {
-    return this.userService.myProfile(user);
-  }
-
-  @Role(['Admin'])
-  @Get(':id')
-  findOne (@Param() getUserDto: GetUserInput): Promise<GetUserOutput> {
-    return this.userService.findOne(getUserDto);
-  }
-
-  @Patch()
-  @Role(['User', 'Admin'])
-  update (
-    @Body() updateUserDto: UpdateUserInput,
-    @AuthUser() user: User
-  ): Promise<UpdateUserOutput> {
-    return this.userService.update(updateUserDto, user);
-  }
-
-  @Patch('change-password')
-  @Role(['User', 'Admin'])
-  changePassword (
-    @Body() changePasswordDto: ChangePasswordInput,
-    @AuthUser() user: User
-  ): Promise<changePasswordOutput> {
-    return this.userService.changePassword(changePasswordDto, user);
-  }
-
-  @Delete()
-  @Role(['User'])
-  deleteAccount (@AuthUser() user: User): Promise<DeleteUserOutput> {
-    return this.userService.deleteAccount(user);
-  }
-
-  @Get('/confirm/:code')
-  verifyEmail (@Param() verifyEmailDto): Promise<VerifyEmailOutput> {
-    return this.userService.verifyEmail(verifyEmailDto)
-  }
 }
