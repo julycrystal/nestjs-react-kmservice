@@ -10,6 +10,11 @@ import { User } from './user/entities/user.entity';
 import { Verification } from './user/entities/verification.entity';
 import { AuthModule } from './auth/auth.module';
 import { LoggerModule } from 'nestjs-pino';
+import { Product, ProductEntry, ProductImageItem } from './product/entities/product.entity';
+import { Category } from './product/entities/category.entity';
+import { Review } from './product/entities/review.entity';
+import { ProfileModule } from './profile/profile.module';
+import { Address } from './profile/entities/address.entity';
 
 @Module({
   imports: [
@@ -45,13 +50,22 @@ import { LoggerModule } from 'nestjs-pino';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Verification],
+      entities: [User,
+        Verification,
+        Product,
+        ProductImageItem,
+        Category,
+        ProductEntry,
+        Review,
+        Address,
+      ],
       synchronize: true,
     }),
     AuthModule,
     UserModule,
     ProductModule,
     JwtModule.forRoot({ privateKey: process.env.PRIVATE_KEY }),
+    ProfileModule,
   ],
 })
 export class AppModule { }
