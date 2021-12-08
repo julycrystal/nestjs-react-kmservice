@@ -1,23 +1,45 @@
 import { InternalServerErrorException } from "@nestjs/common";
 import { Type } from "class-transformer";
-import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString, MinLength } from "class-validator";
+import {
+    IsBoolean,
+    IsEmail,
+    IsEnum,
+    IsOptional,
+    IsString,
+    MinLength,
+} from "class-validator";
 import { CoreEntity } from "../../common/entities/core.entity";
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from "typeorm"
-import * as bcrypt from 'bcryptjs';
-import { Field, InputType, ObjectType, registerEnumType } from "@nestjs/graphql";
+import {
+    BeforeInsert,
+    BeforeUpdate,
+    Column,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    OneToMany,
+} from "typeorm";
+import * as bcrypt from "bcryptjs";
+import {
+    Field,
+    InputType,
+    ObjectType,
+    registerEnumType,
+} from "@nestjs/graphql";
+import { Review } from "../../product/entities/review.entity";
+import { Address } from "../../profile/entities/address.entity";
+import { Product } from "../../product/entities/product.entity";
 
 export enum UserRole {
-    User = 'User',
-    Admin = 'Admin',
+    User = "User",
+    Admin = "Admin",
 }
 
-registerEnumType(UserRole, { name: 'UserRole' })
+registerEnumType(UserRole, { name: "UserRole" });
 
-@InputType('UserInputType', { isAbstract: true })
+@InputType("UserInputType", { isAbstract: true })
 @ObjectType()
 @Entity()
 export class User extends CoreEntity {
-
     @Field(() => String)
     @Column({ unique: true, nullable: false })
     @IsString()
@@ -43,14 +65,14 @@ export class User extends CoreEntity {
     @Type(() => String)
     email: string;
 
-    @Field(type => UserRole)
-    @Column({ type: 'enum', enum: UserRole, default: UserRole.User })
+    @Field((type) => UserRole)
+    @Column({ type: "enum", enum: UserRole, default: UserRole.User })
     @IsEnum(UserRole)
     role: UserRole;
 
     @Field(() => Boolean, { defaultValue: false })
     @Column({ default: false })
-    @Type(type => Boolean)
+    @Type((type) => Boolean)
     @IsBoolean()
     verified: boolean;
 
@@ -68,10 +90,22 @@ export class User extends CoreEntity {
     @Type(() => String)
     picture: string;
 
+    @OneToMany(() => Review, (review) => review.user)
+    reviews: Review[];
+
+    @ManyToMany(() => Product)
+    @JoinTable()
+    wishlists: Product[];
+
+    @OneToMany(() => Address, (address) => address.user)
+    addresses: Address[];
+
     @BeforeInsert()
     async createUsername () {
         if (this.name) {
-            this.username = `${this.name.toLocaleLowerCase().replace(/ /g, '')}${Date.now()}`
+            this.username = `${this.name
+                .toLocaleLowerCase()
+                .replace(/ /g, "")}${Date.now()}`;
         }
     }
 
