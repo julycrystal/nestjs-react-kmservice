@@ -20,9 +20,6 @@ export class UserGuard implements CanActivate {
         const restToken = request && request.headers['x-jwt'];
         const gqlToken = gqlContext.token;
         const token = gqlToken || restToken;
-        console.log('====================================');
-        console.log(token);
-        console.log('====================================');
         if (token) {
             try {
                 const decodedToken = this.jwtService.verify(token);
