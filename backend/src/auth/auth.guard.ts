@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
         }
         const request = context.switchToHttp().getRequest();
         const gqlContext = GqlExecutionContext.create(context).getContext();
-        const restToken = request.headers['x-jwt'];
+        const restToken = request && request.headers['x-jwt'];
         const gqlToken = gqlContext.token;
         const token = gqlToken || restToken;
         if (token) {
