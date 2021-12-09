@@ -39,7 +39,6 @@ export class ProfileService {
     createAddressInput: CreateAddressInput
   ): Promise<CreateAddressOutput> {
     try {
-      console.log("hi");
       const address = await this.addressRepository.create({
         user,
         ...createAddressInput,
@@ -62,7 +61,6 @@ export class ProfileService {
   async getAddresses (user: User): Promise<AddressesOutput> {
     try {
       const addresses = await this.addressRepository.find({ user });
-      console.log(addresses);
       return {
         ok: true,
         addresses,
@@ -113,7 +111,6 @@ export class ProfileService {
     updateAddressInput: UpdateAddressInput
   ): Promise<UpdateAddressOutput> {
     try {
-      console.log(updateAddressInput);
       const address = await this.addressRepository.findOne({
         where: { id: updateAddressInput.id },
         relations: ["user"],
@@ -150,7 +147,6 @@ export class ProfileService {
       if (!product) {
         throw new HttpException("Product not found.", HttpStatus.NOT_FOUND);
       }
-      console.log(user.wishlists);
       user.wishlists.push(product);
       await this.userRepository.save(user);
       return {
