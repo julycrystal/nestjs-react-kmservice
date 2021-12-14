@@ -1,11 +1,14 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { ProductService } from './product.service';
 import { Product } from './entities/product.entity';
 import { CreateProductInput, CreateProductOutput } from './dto/create-product.dto';
-import { UpdateProductInput } from './dto/update-product.input';
 import { Role } from 'src/auth/role.decorator';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { User } from 'src/user/entities/user.entity';
+import { ProductDeleteInput, ProductDeleteOutput } from './dto/product-delete.dto';
+import { GetProductInput, GetProductOutput } from './dto/get-product.dto';
+import { AllProductOutput } from './dto/all-product.dto';
+import { UpdateProductInput, UpdateProductOutput } from './dto/update-product.input';
 
 @Resolver(() => Product)
 export class ProductResolver {
@@ -20,23 +23,29 @@ export class ProductResolver {
     return this.productService.create(createProductInput, user);
   }
 
-  @Query(() => [Product], { name: 'product' })
-  findAll () {
+  @Query(() => AllProductOutput)
+  products (): Promise<AllProductOutput> {
     return this.productService.findAll();
   }
 
-  @Query(() => Product, { name: 'product' })
-  findOne (@Args('id', { type: () => Int }) id: number) {
-    return this.productService.findOne(id);
+  @Query(() => GetProductOutput)
+  product (@Args('getProductInput') getProductInput: GetProductInput): Promise<GetProductOutput> {
+    return this.productService.findOne(getProductInput);
   }
 
-  @Mutation(() => Product)
-  updateProduct (@Args('updateProductInput') updateProductInput: UpdateProductInput) {
-    return this.productService.update(updateProductInput.id, updateProductInput);
+  @Role(['Admin'])
+  @Mutation(() => UpdateProductOutput)
+  updateProduct (@Args('updateProductInput') updateProductInput: UpdateProductInput): Promise<UpdateProductOutput> {
+    return this.productService.update(updateProductInput);
   }
 
-  @Mutation(() => Product)
-  removeProduct (@Args('id', { type: () => Int }) id: number) {
-    return this.productService.remove(id);
+  @Role(['Admin'])
+  @Mutation(() => ProductDeleteOutput)
+  async deleteProduct (
+    @Args('input') productDeleteInput: ProductDeleteInput,
+    @AuthUser() user: User
+  ): Promise<ProductDeleteOutput> {
+    return this.productService.remove(productDeleteInput, user);
   }
+
 }
