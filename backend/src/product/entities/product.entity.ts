@@ -7,8 +7,9 @@ import {
   registerEnumType,
 } from "@nestjs/graphql";
 import { Type } from "class-transformer";
-import { IsNumber, IsString, Max, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, Max, Min } from "class-validator";
 import { CoreEntity } from "src/common/entities/core.entity";
+import { User } from "src/user/entities/user.entity";
 import {
   BeforeInsert,
   Column,
@@ -47,7 +48,8 @@ export class Product extends CoreEntity {
   @Field(() => String)
   slug: string;
 
-  @OneToMany(() => ProductImageItem, (productItem) => productItem.product)
+  @Field(() => [ProductImageItem])
+  @OneToMany(() => ProductImageItem, (productItem) => productItem.product, { onDelete: 'CASCADE' })
   images: ProductImageItem[];
 
   @Field(() => Float)
@@ -59,8 +61,13 @@ export class Product extends CoreEntity {
   @Field(() => Int)
   @Column({ type: Number, nullable: false, default: 0 })
   @IsNumber()
-  @Min(1)
   views: number;
+
+  @Field(() => Int)
+  @Column({ type: Number, nullable: false, default: 0 })
+  @IsNumber()
+  @Min(1)
+  quantity: number;
 
   @Field(() => Float)
   @Column({ type: Number, nullable: false })
@@ -69,16 +76,18 @@ export class Product extends CoreEntity {
   discount: number;
 
   @Field(() => Boolean)
+  @IsNotEmpty()
   @Column({ type: Boolean, default: false })
   showRemaining: boolean;
 
+  @Field(() => Category)
   @ManyToOne(() => Category, (category) => category.products, {
     nullable: true,
     onDelete: "SET NULL",
   })
   category: Category;
 
-  @OneToMany(() => Review, (review) => review.product)
+  @OneToMany(() => Review, (review) => review.product, { onDelete: 'CASCADE' })
   reviews: Review[];
 
   @BeforeInsert()
