@@ -107,7 +107,27 @@ export class ProductService {
     return `This action updates a #${id} product`;
   }
 
-  remove (id: number) {
-    return `This action removes a #${id} product`;
+  async remove ({ id }: ProductDeleteInput, user: User): Promise<ProductDeleteOutput> {
+    try {
+      if (user.role !== UserRole.Admin) {
+        throw new HttpException('Insufficient permissions.', HttpStatus.UNAUTHORIZED);
+      }
+      const product = await this.productRepository.findOne({ where: { id } })
+      if (!product) {
+        throw new HttpException('Product not found.', HttpStatus.NOT_FOUND);
+      }
+      await this.productRepository.delete({ id });
+      return {
+        ok: true,
+      }
+    } catch (error) {
+      if (error.name && error.name === "HttpException") {
+        throw error;
+      }
+      return {
+        ok: false,
+        error: "Can't get products.",
+      };
+    }
   }
 }
