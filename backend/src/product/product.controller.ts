@@ -35,12 +35,11 @@ export class ProductController {
         }),
     )
     async upload (
-        @AuthUser() user: User,
         @Param('productId') productId,
         @UploadedFiles() files: Express.Multer.File[]
     ): Promise<CoreOutput> {
         const filenames = files.map(file => file.filename);
-        return this.productService.uploadProductPhotos(user, filenames, productId)
+        return this.productService.uploadProductPhotos(filenames, productId)
     }
 
 }
