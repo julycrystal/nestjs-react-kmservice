@@ -106,25 +106,29 @@ export class ProductImageItem extends CoreEntity {
   product: Product;
 }
 
+@InputType("ProductEntryInputType", { isAbstract: true })
 @ObjectType()
 @Entity()
-@InputType("ProductEntryInputType", { isAbstract: true })
 export class ProductEntry extends CoreEntity {
+
+  @Field(() => Date)
   @CreateDateColumn({ select: true })
   @Type(() => Date)
-  @Field(() => Date)
   entryDate: Date;
 
-  @Column({ type: Number, nullable: false })
   @Field(() => Int)
+  @Column({ type: Number, nullable: false })
   @IsNumber()
   @Min(1)
   amount: number;
 
+  @Field(() => User)
+  @ManyToOne(() => User, user => user.products)
+  user: User;
+
+  @Field(() => Product)
   @ManyToOne(() => Product, (product) => product.images, {
     onDelete: "CASCADE",
   })
   product: Product;
-
-  // on delete reduce amount
 }
