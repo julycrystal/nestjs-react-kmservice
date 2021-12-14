@@ -91,7 +91,7 @@ export class ProfileService {
       if (address.user.id !== user.id) {
         throw new HttpException("Permission denied.", HttpStatus.UNAUTHORIZED);
       }
-      await this.addressRepository.delete(address);
+      await this.addressRepository.delete({ id: address.id });
       return {
         ok: true,
       };
