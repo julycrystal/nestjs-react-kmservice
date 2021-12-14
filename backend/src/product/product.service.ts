@@ -4,10 +4,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CoreOutput } from 'src/common/dtos/core.output';
 import { User, UserRole } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
+import { AllProductOutput } from './dto/all-product.dto';
 import { CreateProductInput, CreateProductOutput } from './dto/create-product.dto';
-import { UpdateProductInput } from './dto/update-product.input';
+import { ProductDeleteInput, ProductDeleteOutput } from './dto/product-delete.dto';
+import { GetProductInput, GetProductOutput } from './dto/get-product.dto';
 import { Category } from './entities/category.entity';
 import { Product, ProductImageItem } from './entities/product.entity';
+import { UpdateProductInput, UpdateProductOutput } from './dto/update-product.input';
 
 @Injectable()
 export class ProductService {
@@ -63,7 +66,6 @@ export class ProductService {
   }
 
   async uploadProductPhotos (
-    user: User,
     files: string[],
     productId: string,
   ): Promise<CoreOutput> {
@@ -73,7 +75,6 @@ export class ProductService {
         throw new HttpException('Product not found.', HttpStatus.NOT_FOUND);
       }
       await this.productImageItemRepository.delete({ product });
-      console.log(files)
       await files.forEach(async file => {
         let createdProductImageItem = await this.productImageItemRepository.create({
           imageUrl: this.configService.get("END_POINT") + `/product/${file}`,
