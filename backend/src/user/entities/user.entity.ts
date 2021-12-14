@@ -27,7 +27,7 @@ import {
 } from "@nestjs/graphql";
 import { Review } from "../../product/entities/review.entity";
 import { Address } from "../../profile/entities/address.entity";
-import { Product } from "../../product/entities/product.entity";
+import { Product, ProductEntry } from "../../product/entities/product.entity";
 
 export enum UserRole {
     User = "User",
@@ -99,6 +99,9 @@ export class User extends CoreEntity {
 
     @OneToMany(() => Address, (address) => address.user)
     addresses: Address[];
+
+    @OneToMany(() => ProductEntry, (productEntry) => productEntry.user)
+    products: ProductEntry[];
 
     @BeforeInsert()
     async createUsername () {
