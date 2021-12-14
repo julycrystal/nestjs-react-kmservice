@@ -1,12 +1,11 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsString } from "class-validator";
-import { CoreOutput } from "src/common/dtos/core.output";
 import { CoreEntity } from "src/common/entities/core.entity";
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { Product } from "./product.entity";
 
+@InputType({ isAbstract: true, })
 @ObjectType()
-@InputType()
 @Entity()
 export class Category extends CoreEntity {
     @Column({ type: String },)
