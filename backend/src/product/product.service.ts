@@ -95,8 +95,23 @@ export class ProductService {
     }
   }
 
-  findAll () {
-    return `This action returns all product`;
+  async findAll (): Promise<AllProductOutput> {
+    try {
+      const products = await this.productRepository.find({ relations: ['images', 'category'] })
+      console.log(products)
+      return {
+        ok: true,
+        products,
+      }
+    } catch (error) {
+      if (error.name && error.name === "HttpException") {
+        throw error;
+      }
+      return {
+        ok: false,
+        error: "Can't get products.",
+      };
+    }
   }
 
   async findOne ({ id }: GetProductInput): Promise<GetProductOutput> {
