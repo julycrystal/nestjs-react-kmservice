@@ -99,19 +99,15 @@ export class ProductService {
     return `This action returns all product`;
   }
 
-  findOne (id: number) {
-    return `This action returns a #${id} product`;
-  }
-
-  async update (updateProductInput: UpdateProductInput): Promise<UpdateProductOutput> {
+  async findOne ({ id }: GetProductInput): Promise<GetProductOutput> {
     try {
-      const product = await this.productRepository.findOne({ where: { id: updateProductInput.id } })
+      const product = await this.productRepository.findOne({ where: { id }, relations: ['category'] })
       if (!product) {
         throw new HttpException('Product not found.', HttpStatus.NOT_FOUND);
       }
-      await this.productRepository.update(updateProductInput.id, { ...updateProductInput })
       return {
         ok: true,
+        product,
       }
     } catch (error) {
       if (error.name && error.name === "HttpException") {
@@ -122,6 +118,10 @@ export class ProductService {
         error: "Can't get products.",
       };
     }
+  }
+
+  update (id: number, updateProductInput: UpdateProductInput) {
+    return `This action updates a #${id} product`;
   }
 
   async remove ({ id }: ProductDeleteInput, user: User): Promise<ProductDeleteOutput> {
