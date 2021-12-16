@@ -28,6 +28,7 @@ import {
 import { Review } from "../../product/entities/review.entity";
 import { Address } from "../../profile/entities/address.entity";
 import { Product, ProductEntry } from "../../product/entities/product.entity";
+import { Order } from "src/order/entities/order.entity";
 
 export enum UserRole {
     User = "User",
@@ -90,6 +91,7 @@ export class User extends CoreEntity {
     @Type(() => String)
     picture: string;
 
+    @Field(() => [Review])
     @OneToMany(() => Review, (review) => review.user)
     reviews: Review[];
 
@@ -97,11 +99,17 @@ export class User extends CoreEntity {
     @JoinTable()
     wishlists: Product[];
 
+    @Field(() => [Address])
     @OneToMany(() => Address, (address) => address.user)
     addresses: Address[];
 
+    @Field(() => [ProductEntry])
     @OneToMany(() => ProductEntry, (productEntry) => productEntry.user)
     products: ProductEntry[];
+
+    @Field(() => [Order])
+    @OneToMany(() => Order, (order) => order.customer)
+    orders: Order[];
 
     @BeforeInsert()
     async createUsername () {
