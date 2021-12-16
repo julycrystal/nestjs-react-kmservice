@@ -5,8 +5,8 @@ import { User } from "../../user/entities/user.entity";
 import { Column, Entity, ManyToOne } from "typeorm";
 import { Product } from "./product.entity";
 
+@InputType("ReviewInputType", { isAbstract: true })
 @ObjectType()
-@InputType()
 @Entity()
 export class Review extends CoreEntity {
     @Column({ type: String },)
