@@ -9,9 +9,10 @@ async function bootstrap () {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useLogger(app.get(Logger));
   app.useStaticAssets(join(__dirname, '..', '..', 'uploads'));
+  app.enableCors();
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
   }))
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 4000);
 }
 bootstrap();
