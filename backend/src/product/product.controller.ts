@@ -1,9 +1,7 @@
-import { Controller, Param, Post, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
-import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { Controller, Param, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { FilesInterceptor } from "@nestjs/platform-express";
 import { extname } from "path";
-import { AuthUser } from "src/auth/auth-user.decorator";
 import { Role } from "src/auth/role.decorator";
-import { User } from "src/user/entities/user.entity";
 import { ProductService } from "./product.service";
 import { diskStorage } from 'multer';
 import { imageFileFilter } from "src/common/upload-utils";
@@ -36,7 +34,7 @@ export class ProductController {
     )
     async upload (
         @Param('productId') productId,
-        @UploadedFiles() files: Express.Multer.File[]
+        @UploadedFiles() files,
     ): Promise<CoreOutput> {
         const filenames = files.map(file => file.filename);
         return this.productService.uploadProductPhotos(filenames, productId)
