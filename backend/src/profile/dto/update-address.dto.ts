@@ -1,6 +1,6 @@
 import { Field, InputType, ObjectType, PartialType } from '@nestjs/graphql';
 import { IsNotEmpty } from 'class-validator';
-import { CoreOutput } from 'src/common/dtos/core.output';
+import { CoreOutput } from '../../common/dtos/core.output';
 import { CreateAddressInput } from './create-address.dto';
 
 @InputType()

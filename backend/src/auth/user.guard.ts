@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { JwtService } from 'src/jwt/jwt.service';
-import { UserService } from 'src/user/user.service';
+import { JwtService } from '..//jwt/jwt.service';
+import { UserService } from '..//user/user.service';
 
 @Injectable()
 export class UserGuard implements CanActivate {

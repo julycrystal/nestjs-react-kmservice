@@ -5,8 +5,8 @@ import {
   CreateAddressInput,
   CreateAddressOutput,
 } from "./dto/create-address.dto";
-import { AuthUser } from "src/auth/auth-user.decorator";
-import { User } from "src/user/entities/user.entity";
+import { AuthUser } from "../auth/auth-user.decorator";
+import { User } from "../user/entities/user.entity";
 import { AddressesOutput } from "./dto/get-address.dto";
 import {
   DeleteAddressInput,
@@ -21,7 +21,7 @@ import {
   ToggleWishlistOutput,
 } from "./dto/toggle-wishlist.dto";
 import { UseGuards } from "@nestjs/common";
-import { UserGuard } from "src/auth/user.guard";
+import { UserGuard } from "../auth/user.guard";
 
 @UseGuards(UserGuard)
 @Resolver(() => Address)

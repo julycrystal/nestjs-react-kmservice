@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { CoreOutput } from "src/common/dtos/core.output";
+import { CoreOutput } from "../../common/dtos/core.output";
 import { Address } from "../entities/address.entity";
 
 @ObjectType()

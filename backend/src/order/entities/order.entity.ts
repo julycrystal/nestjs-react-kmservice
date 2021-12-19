@@ -1,9 +1,8 @@
-import { ObjectType, Field, Int, InputType, registerEnumType } from '@nestjs/graphql';
+import { ObjectType, Field, InputType, registerEnumType } from '@nestjs/graphql';
 import { IsEnum, IsNumber, IsString, Min } from 'class-validator';
-import { CoreEntity } from 'src/common/entities/core.entity';
-import { Product } from 'src/product/entities/product.entity';
-import { Address } from 'src/profile/entities/address.entity';
-import { User } from 'src/user/entities/user.entity';
+import { CoreEntity } from '../../common/entities/core.entity';
+import { Address } from '../../profile/entities/address.entity';
+import { User } from '../../user/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 

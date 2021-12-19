@@ -1,6 +1,6 @@
 import { InputType, ObjectType, Field } from '@nestjs/graphql';
-import { IsNotEmpty, IsNotEmptyObject, IsNumber } from 'class-validator';
-import { CoreOutput } from 'src/common/dtos/core.output';
+import { IsNotEmpty, IsNumber } from 'class-validator';
+import { CoreOutput } from '../../common/dtos/core.output';
 
 @InputType()
 export class CreateOrderInput {

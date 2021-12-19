@@ -28,7 +28,7 @@ import {
 import { Review } from "../../product/entities/review.entity";
 import { Address } from "../../profile/entities/address.entity";
 import { Product, ProductEntry } from "../../product/entities/product.entity";
-import { Order } from "src/order/entities/order.entity";
+import { Order } from "../../order/entities/order.entity";
 
 export enum UserRole {
     User = "User",

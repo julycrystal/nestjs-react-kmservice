@@ -1,6 +1,6 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsString } from "class-validator";
-import { CoreEntity } from "src/common/entities/core.entity";
+import { CoreEntity } from "../../common/entities/core.entity";
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { Product } from "./product.entity";
 

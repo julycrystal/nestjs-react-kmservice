@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { AuthUser } from 'src/auth/auth-user.decorator';
-import { Role } from 'src/auth/role.decorator';
+import { AuthUser } from '../auth/auth-user.decorator';
+import { Role } from '../auth/role.decorator';
 import { ChangePasswordInput, changePasswordOutput } from './dto/change-password.dto';
 import { CreateUserInput, CreateUserOutput } from './dto/create-user.dto';
 import { DeleteUserOutput } from './dto/delete-user.dto';

@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CoreOutput } from 'src/common/dtos/core.output';
-import { User, UserRole } from 'src/user/entities/user.entity';
+import { CoreOutput } from '../common/dtos/core.output';
+import { User, UserRole } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { AllProductOutput } from './dto/all-product.dto';
 import { CreateProductInput, CreateProductOutput } from './dto/create-product.dto';
@@ -99,7 +99,6 @@ export class ProductService {
   async findAll (): Promise<AllProductOutput> {
     try {
       const products = await this.productRepository.find({ relations: ['images', 'category'] })
-      console.log(products)
       return {
         ok: true,
         products,
