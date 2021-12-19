@@ -1,9 +1,8 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsOptional, IsString } from "class-validator";
-import { CoreEntity } from "src/common/entities/core.entity";
-import { Order } from "src/order/entities/order.entity";
-import { User } from "src/user/entities/user.entity";
+import { CoreEntity } from "../../common/entities/core.entity";
+import { User } from "../../user/entities/user.entity";
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 
 @InputType("AddressInput", { isAbstract: true })
