@@ -1,7 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Post } from 'src/post/entities/post.entity';
-import { MockPostRepository } from '../../post/__mocks__/post.repository';
 import { QueryFailedError, Repository } from 'typeorm';
 import { JwtService } from '../../jwt/jwt.service';
 import { CreateUserInput, CreateUserOutput } from '../dto/create-user.dto';
@@ -14,16 +12,21 @@ import { MockVerificationRepository } from '../__mocks__/verification.repository
 import { MockUserRepoitory } from '../__mocks__/user.repository';
 import { GetUsersOutput } from '../dto/get-users.dto';
 import { GetUserOutput } from '../dto/get-user.dto';
-import { UpdateUserInput as ChangePasswordInput, UpdateUserOutput } from '../dto/update-user.dto';
+import { UpdateUserInput, UpdateUserOutput } from '../dto/update-user.dto';
 import { ChangePasswordInput, changePasswordOutput } from '../dto/change-password.dto';
 import { MyProfileOutput } from '../dto/my-profile.dto';
-import { DeleteUserOutput } from '../dto/delete-user.dto';
 import { VerifyEmailOutput } from '../dto/verify-email.dto';
+import { ConfigService } from '@nestjs/config';
 import { getVerificationStub } from './stubs/verification.stub';
+import { UploadProfilePictureOutput } from '../dto/upload-profile-picture.dto';
 
 const mockJwtService = () => ({
   sign: jest.fn(() => "signed-token-baby"),
   verify: jest.fn(),
+});
+
+const mockConfigService = () => ({
+  get: jest.fn(() => "signed-token-baby"),
 });
 
 
@@ -33,6 +36,7 @@ describe('UserService', () => {
   let service: UserService;
   let userRepository: MockRepoitory<User>;
   let verificationRepository: MockRepoitory<Verification>;
+  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -43,10 +47,6 @@ describe('UserService', () => {
           useValue: MockUserRepoitory,
         },
         {
-          provide: getRepositoryToken(Post),
-          useValue: MockPostRepository,
-        },
-        {
           provide: getRepositoryToken(Verification),
           useValue: MockVerificationRepository,
         },
@@ -54,11 +54,13 @@ describe('UserService', () => {
           provide: JwtService,
           useValue: mockJwtService(),
         },
-
-
+        {
+          provide: ConfigService,
+          useValue: mockConfigService(),
+        },
       ],
     }).compile();
-
+    configService = module.get<ConfigService>(ConfigService);
     service = module.get<UserService>(UserService);
     userRepository = module.get(getRepositoryToken(User));
     verificationRepository = module.get(getRepositoryToken(Verification));
@@ -271,9 +273,10 @@ describe('UserService', () => {
   describe("update()", () => {
     let updateUserOutput: UpdateUserOutput;
 
-    const updateUserDto: ChangePasswordInput = {
+    const updateUserDto: UpdateUserInput = {
       name: "KMh",
       email: "asd@gmail.com",
+      bio: "asdf",
     }
     describe('when update() is called ', () => {
 
@@ -327,8 +330,6 @@ describe('UserService', () => {
         }
       })
     })
-
-
   });
 
   describe("changePassword()", () => {
@@ -350,8 +351,6 @@ describe('UserService', () => {
         let user: User = {
           ...getUserStub(),
           verified: false,
-          posts: [],
-          comments: [],
           createUsername: async () => { },
           hashPassword: async () => { },
           checkPassword: jest.fn().mockResolvedValueOnce(true)
@@ -375,8 +374,6 @@ describe('UserService', () => {
         let user: User = {
           ...getUserStub(),
           verified: false,
-          posts: [],
-          comments: [],
           createUsername: async () => { },
           hashPassword: async () => { },
           checkPassword: jest.fn().mockResolvedValueOnce(false)
@@ -400,8 +397,6 @@ describe('UserService', () => {
         let user: User = {
           ...getUserStub(),
           verified: false,
-          posts: [],
-          comments: [],
           createUsername: async () => { },
           hashPassword: async () => { },
           checkPassword: jest.fn().mockResolvedValueOnce(true)
@@ -445,8 +440,6 @@ describe('UserService', () => {
         }
       })
     })
-
-
   });
 
   describe("myProfile()", () => {
@@ -604,4 +597,57 @@ describe('UserService', () => {
       })
     })
   });
+
+  describe("uploadProfilePicture()", () => {
+    let uploadProfilePictureOutput: UploadProfilePictureOutput;
+
+    const testFileName = "file.png";
+    const authUser: User = getUserStub();
+
+    describe('when uploadProfilePicture() is called ', () => {
+
+      beforeEach(() => {
+        uploadProfilePictureOutput = null;
+        jest.resetAllMocks();
+      })
+
+      it("should update profile picture successfully", async () => {
+        userRepository.findOne.mockResolvedValue(getUserStub());
+        uploadProfilePictureOutput = await service.uploadProfilePicture(authUser, testFileName);
+
+        expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+        expect(userRepository.save).toHaveBeenCalledTimes(1);
+        expect(userRepository.findOne).toHaveBeenCalledWith({ id: authUser.id });
+
+        expect(configService.get).toHaveBeenCalledTimes(1);
+        expect(configService.get).toHaveBeenCalledWith("END_POINT");
+      })
+
+      it('should fail on error.', async () => {
+        userRepository.findOne.mockRejectedValueOnce(new Error(''));
+        uploadProfilePictureOutput = await service.uploadProfilePicture(authUser, testFileName);
+
+        expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+        expect(userRepository.findOne).toHaveBeenCalledWith({ id: 2 });
+
+        expect(uploadProfilePictureOutput.ok).toEqual(false);
+        expect(uploadProfilePictureOutput.error).toEqual('Cannot upload profile picture.');
+      })
+
+      it('should throw 404 when user is not found.', async () => {
+        userRepository.findOne.mockResolvedValueOnce(null);
+        uploadProfilePictureOutput = null;
+        try {
+          uploadProfilePictureOutput = await service.uploadProfilePicture(authUser, testFileName);
+        } catch (error) {
+          expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+          expect(userRepository.findOne).toHaveBeenCalledWith({ id: authUser.id });
+
+          expect(error.name).toEqual("HttpException");
+          expect(error.status).toEqual(400);
+        }
+      })
+    })
+  });
+
 });
