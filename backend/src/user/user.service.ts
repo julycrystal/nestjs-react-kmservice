@@ -316,6 +316,9 @@ export class UserService {
         ok: true,
       };
     } catch (error) {
+      if (error.name && error.name === "HttpException") {
+        throw error;
+      }
       return {
         ok: false,
         error: "Cannot upload profile picture.",
