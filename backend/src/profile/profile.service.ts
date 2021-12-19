@@ -1,8 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Product } from "src/product/entities/product.entity";
-import { CreateUserOutput } from "src/user/dto/create-user.dto";
-import { User } from "src/user/entities/user.entity";
+import { Product } from "../product/entities/product.entity";
+import { User } from "../user/entities/user.entity";
 import { Repository } from "typeorm";
 import {
   CreateAddressInput,
@@ -48,9 +47,6 @@ export class ProfileService {
         ok: true,
       };
     } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
-      }
       return {
         ok: false,
         error: "Can't create address.",
@@ -66,9 +62,6 @@ export class ProfileService {
         addresses,
       };
     } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
-      }
       return {
         ok: false,
         error: "Cannot get addresses.",
