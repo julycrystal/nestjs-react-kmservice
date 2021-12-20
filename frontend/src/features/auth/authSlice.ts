@@ -17,7 +17,9 @@ export const authSlice = createSlice({
             state.user = action.payload.user;
         },
         register: (state,) => { },
-        logout: (state,) => { },
+        logout: (state,) => {
+            state.user = undefined;
+        },
         myProfile: (state) => { },
         deleteAccount: (state) => { },
     }
