@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom';
 import { useMediaQuery } from "react-responsive";
-// import { removeToken, removeUser } from '../../service/localstorage.service';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../features/auth/authSlice';
 import { RootState } from '../app/store';
-// import { Navbar } from '.';
+import { removeToken } from '../features/auth/services/localstorage.service';
 
 const NavBar = () => {
     const dispatch = useDispatch();
@@ -24,11 +23,9 @@ const NavBar = () => {
     }, [user, openDropdown])
 
     const logoutHandler = () => {
-        // removeToken();
-        // removeUser();
+        removeToken();
         dispatch(logout())
     }
-
 
     const Dropdown = () => {
         return <>
