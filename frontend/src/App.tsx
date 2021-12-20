@@ -1,56 +1,63 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
+// import { PRODUCT_LIST } from './graphql/product.graphql';
+import { Routes, Route } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Footer, Navbar } from "./components";
+import { Home } from "./features/home/containers";
+import { Login, Register } from "./features/auth/containers";
+import { getToken } from "./features/auth/services/localstorage.service";
+import { Spinner } from "./shared/loader";
+import { useDispatch } from "react-redux";
+import { useState } from "react";
+import { MY_PROFILE } from "./features/auth/graphql/auth.graphql";
+import { login } from "./features/auth/authSlice";
 
-function App() {
+function App () {
+  const [enabled, setEnabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
+  const token = getToken();
+
+  const [fetchProfileData] = useLazyQuery(
+    MY_PROFILE,
+    {
+      fetchPolicy: "no-cache",
+      onCompleted: ({ myProfile }) => {
+        if (myProfile.ok) {
+          dispatch(login({ user: myProfile.user }));
+        }
+        setLoading(false);
+      },
+      onError: () => {
+        setLoading(false);
+      }
+    }
+  );
+
+  if (token && !enabled) {
+    setLoading(true);
+    setEnabled(true);
+    fetchProfileData();
+  }
+
+  if (loading) {
+    return (<div className="h-screen flex items-center justify-center">
+      <Spinner height={40} color={"#000"} />
+    </div>);
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <div className="bg-gray-200 flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          {/* <Route path="/products" element={<Products />} /> */}
+        </Routes>
+      </div>
+      <Footer />
     </div>
   );
 }
