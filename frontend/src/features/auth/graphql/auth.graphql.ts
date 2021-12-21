@@ -2,8 +2,8 @@ import gql from "graphql-tag";
 import { USER_FRAGMENT } from "./fragments";
 
 export const LOGIN = gql`
-  mutation LoginMutation($email: String!, $password: String!) {
-    login(loginInput: { password: $password, email: $email }) {
+  mutation LoginMutation($loginInput:LoginInput!) {
+    login(loginInput: $loginInput) {
       ok
       error
       user {
@@ -13,6 +13,19 @@ export const LOGIN = gql`
     }
   }
   ${USER_FRAGMENT}
+`;
+
+export const REGISTER_MUTATION = gql`
+  mutation RegisterMutation(
+    $createUserInput:CreateUserInput!
+  ) {
+    register(
+      createUserInput: $createUserInput,
+    ) {
+      ok
+      error
+    }
+  }
 `;
 
 export const MY_PROFILE = gql`
