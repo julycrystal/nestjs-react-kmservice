@@ -7,7 +7,7 @@ interface IHeaderProps {
 const Header = ({ title, description }: IHeaderProps) => {
     return (
         <Helmet>
-            <title>KM Blog | {title}</title>
+            <title>KM Commerce | {title}</title>
             <meta name="description" content={description} />
         </Helmet>
     )
