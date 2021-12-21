@@ -73,11 +73,11 @@ const NavBar = () => {
                 </div>
                 <div className="hidden lg:flex">
                     <div className="text-sm font-bold">
-                        {user?.name ? <Dropdown /> : <>  <NavLink className={({ isActive }) => isActive ? "text-blue-500" : ""} to="/login">
+                        {user?.name ? <Dropdown /> : <>  <NavLink className={({ isActive }) => isActive ? "text-blue-500" : ""} to="/auth/login">
                             Login
                         </NavLink>
                             <span className='mx-3'>/</span>
-                            <NavLink className={({ isActive }) => isActive ? "text-blue-500" : ""} to="/register">
+                            <NavLink className={({ isActive }) => isActive ? "text-blue-500" : ""} to="/auth/register">
                                 Register
                             </NavLink></>}
                     </div>
@@ -115,11 +115,11 @@ const NavBar = () => {
                     <li className="px-2 py-4 text-sm">
                         {user?.name ? <Dropdown /> :
                             <>
-                                <Link to="/login">
+                                <Link to="/auth/login">
                                     Login
                                 </Link>
                                 <span className='mx-3'>/</span>
-                                <Link to="/register">
+                                <Link to="/auth/register">
                                     Register
                                 </Link>
                             </>
