@@ -6,6 +6,7 @@ import { SubmitButton } from '../../../shared/button';
 import FormError, { ErrorMessage } from '../../../shared/error/FormError';
 import Header from '../../../shared/Header';
 import { getErrorMessage } from '../../../utils/getErrorMessage';
+import { RegisterMutation, RegisterMutationVariables } from '../../../__generated__/RegisterMutation';
 import { REGISTER_MUTATION } from '../graphql/auth.graphql';
 
 export const Register = () => {
@@ -14,7 +15,7 @@ export const Register = () => {
     const { register, getValues, handleSubmit, formState: { errors } } = useForm({ mode: 'onChange' });
     const navigate = useNavigate();
     const { email, password, name } = getValues();
-    const [mutate, { loading: isLoading }] = useMutation(REGISTER_MUTATION, {
+    const [mutate, { loading: isLoading }] = useMutation<RegisterMutation, RegisterMutationVariables>(REGISTER_MUTATION, {
         onCompleted: ({ register: data }) => {
             console.log(data);
             if (data.ok) {

@@ -5,11 +5,12 @@ import { useDispatch } from "react-redux";
 import FormError, { ErrorMessage } from "../../../shared/error/FormError";
 import { SubmitButton } from "../../../shared/button";
 import Header from "../../../shared/Header";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { LOGIN } from "../graphql/auth.graphql";
 import { getErrorMessage } from "../../../utils/getErrorMessage";
 import { saveToken } from "../services/localstorage.service";
 import { login } from "../authSlice";
+import { LoginMutation, LoginMutationVariables } from "../../../__generated__/LoginMutation";
 
 export const Login = () => {
     const dispatch = useDispatch();
@@ -24,11 +25,11 @@ export const Login = () => {
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState(null);
 
-    const [mutate, { loading: isLoading }] = useMutation(LOGIN, {
+    const [loginMutation, { loading: isLoading }] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN, {
         fetchPolicy: 'no-cache',
         onCompleted: ({ login: loginMutationResult }) => {
             reset();
-            if (loginMutationResult.ok) {
+            if (loginMutationResult.ok && loginMutationResult.token && loginMutationResult.user) {
                 saveToken(loginMutationResult.token)
                 if (loginMutationResult.user) {
                     dispatch(login({ user: loginMutationResult.user }));
@@ -42,7 +43,7 @@ export const Login = () => {
     });
 
     const onSubmit = () => {
-        mutate({ variables: { ...getValues() } });
+        loginMutation({ variables: { ...getValues() } });
     };
 
     const isValid = () => {
