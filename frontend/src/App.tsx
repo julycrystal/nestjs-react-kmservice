@@ -1,16 +1,16 @@
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
-// import { PRODUCT_LIST } from './graphql/product.graphql';
+import { useLazyQuery } from "@apollo/client";
 import { Routes, Route } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { Footer, Navbar } from "./components";
 import { Home } from "./features/home/containers";
-import { Login, Register } from "./features/auth/containers";
+import Auth from "./features/auth/containers";
 import { getToken } from "./features/auth/services/localstorage.service";
 import { Spinner } from "./shared/loader";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { MY_PROFILE } from "./features/auth/graphql/auth.graphql";
 import { login } from "./features/auth/authSlice";
+import Profile from "./features/profile/container";
+import PageNotFound from "./components/PageNotFound";
 
 function App () {
   const [enabled, setEnabled] = useState(false);
@@ -52,9 +52,10 @@ function App () {
       <div className="bg-gray-200 flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          {/* <Route path="/products" element={<Products />} /> */}
+          <Route path="/auth/*" element={<Auth />} />
+          <Route path="/profile/*" element={<Profile />} />
+          <Route path="*" element={<PageNotFound />} />
+          <Route path="404" element={<PageNotFound />} />
         </Routes>
       </div>
       <Footer />
