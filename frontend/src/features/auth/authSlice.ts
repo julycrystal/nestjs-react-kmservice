@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IUser } from "./types/user.type";
+import { UserParts } from "../../__generated__/UserParts";
 
 export interface IAuthState {
-    user?: IUser;
+    user?: UserParts;
 }
 
 const initialState: IAuthState = {
