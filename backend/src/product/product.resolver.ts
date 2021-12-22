@@ -42,7 +42,7 @@ export class ProductResolver {
   @Role(['Admin'])
   @Mutation(() => ProductDeleteOutput)
   async deleteProduct (
-    @Args('input') productDeleteInput: ProductDeleteInput,
+    @Args('productDeleteInput') productDeleteInput: ProductDeleteInput,
     @AuthUser() user: User
   ): Promise<ProductDeleteOutput> {
     return this.productService.remove(productDeleteInput, user);
