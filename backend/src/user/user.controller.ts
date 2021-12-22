@@ -1,8 +1,8 @@
-import { Controller, Post, Body, UseInterceptors, UploadedFile, Logger, Inject } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UserService } from './user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { Role } from 'src/auth/role.decorator';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { User } from './entities/user.entity';
@@ -19,14 +19,11 @@ export class UserController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: '../uploads/profile',
+        destination: join(__dirname, '..', '..', 'uploads', 'profile'),
         filename: (req, file, callback) => {
-          const name = file.originalname.split('.')[0];
+          const name = file.originalname.toLowerCase().replace(' ', '-').split('.')[0]
           const fileExtName = extname(file.originalname);
-          const randomName = Array(4)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
+          const randomName = Date.now().toString();
           callback(null, `${name}-${randomName}${fileExtName}`);
         },
       }),
@@ -34,9 +31,9 @@ export class UserController {
   )
   async upload (
     @AuthUser() user: User,
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFile() file,
   ): Promise<UploadProfilePictureOutput> {
-    return this.usersService.uploadProfilePicture(user, file.filename)
+    return this.usersService.uploadProfilePicture(user, file?.filename)
   }
 
 }
