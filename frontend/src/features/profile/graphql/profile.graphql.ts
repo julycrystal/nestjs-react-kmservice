@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { USER_FRAGMENT } from "../../auth/graphql/fragments";
+import { ADDRESS_FRAGMENT, USER_FRAGMENT } from "../../auth/graphql/fragments";
 
 export const DELETE_ACCOUNT_MUTATION = gql`
   mutation DeleteAccountMutation {
@@ -24,14 +24,23 @@ export const UPDATE_PROFILE_MUTATION = gql`
 `;
 
 export const CHANGE_PASSWORD_MUTATION = gql`
-  mutation ChangePasswordMutation(
-    $changePasswordInput: ChangePasswordInput!
-  ) {
-    changePassword(
-      changePasswordInput:$changePasswordInput
-    ) {
+  mutation ChangePasswordMutation($changePasswordInput: ChangePasswordInput!) {
+    changePassword(changePasswordInput: $changePasswordInput) {
       error
       ok
     }
   }
+`;
+
+export const GET_ADDRESSES = gql`
+  query GetAddresses {
+    getAddresses {
+      ok
+      error
+      addresses {
+     ...AddressParts
+    }
+    }
+  }
+  ${ADDRESS_FRAGMENT}
 `;
