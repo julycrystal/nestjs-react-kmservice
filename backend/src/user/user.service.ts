@@ -1,23 +1,29 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { JwtService } from "../jwt/jwt.service";
-import { Repository } from "typeorm";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { JwtService } from '../jwt/jwt.service'
+import { Repository } from 'typeorm'
 import {
   ChangePasswordInput,
   changePasswordOutput,
-} from "./dto/change-password.dto";
-import { CreateUserInput, CreateUserOutput } from "./dto/create-user.dto";
-import { DeleteUserOutput } from "./dto/delete-user.dto";
-import { GetUserInput, GetUserOutput } from "./dto/get-user.dto";
-import { GetUsersOutput } from "./dto/get-users.dto";
-import { LoginInput, LoginOutput } from "./dto/login.dto";
-import { MyProfileOutput } from "./dto/my-profile.dto";
-import { UpdateUserInput, UpdateUserOutput } from "./dto/update-user.dto";
-import { User } from "./entities/user.entity";
-import { Verification } from "./entities/verification.entity";
-import { VerifyEmailInput, VerifyEmailOutput } from "./dto/verify-email.dto";
-import { UploadProfilePictureOutput } from "./dto/upload-profile-picture.dto";
-import { ConfigService } from "@nestjs/config";
+} from './dto/change-password.dto'
+import { CreateUserInput, CreateUserOutput } from './dto/create-user.dto'
+import { DeleteUserOutput } from './dto/delete-user.dto'
+import { GetUserInput, GetUserOutput } from './dto/get-user.dto'
+import { GetUsersOutput } from './dto/get-users.dto'
+import { LoginInput, LoginOutput } from './dto/login.dto'
+import { MyProfileOutput } from './dto/my-profile.dto'
+import { UpdateUserInput, UpdateUserOutput } from './dto/update-user.dto'
+import { User } from './entities/user.entity'
+import { Verification } from './entities/verification.entity'
+import { VerifyEmailInput, VerifyEmailOutput } from './dto/verify-email.dto'
+import { UploadProfilePictureOutput } from './dto/upload-profile-picture.dto'
+import { ConfigService } from '@nestjs/config'
+import {
+  extractFileNameFromUrl,
+  removeProfilePicture,
+} from 'src/utils/file.utils'
+import { CoreOutput } from 'src/common/dtos/core.output'
+import { ToggleDisableInput } from './dto/toggle-disable-status.dto'
 
 @Injectable()
 export class UserService {
@@ -30,28 +36,58 @@ export class UserService {
     private configService: ConfigService
   ) { }
 
-  async register (createUserDto: CreateUserInput): Promise<CreateUserOutput> {
+  private async toggleDisableStatus (
+    userId: number,
+    disable: boolean
+  ): Promise<CoreOutput> {
     try {
-      const user = await this.usersRepository.create(createUserDto);
-      await this.usersRepository.save(user);
-      await this.verificationRepository.save(
-        this.verificationRepository.create({ user })
-      );
-      //  send email here
+      const user = await this.usersRepository.findOne({ id: userId })
+      if (!user) {
+        throw new HttpException('User not found.', HttpStatus.BAD_REQUEST)
+      }
+      user.disabled = disable
+
+      await this.usersRepository.save(user)
+
       return {
         ok: true,
-      };
+      }
     } catch (error) {
-      if (error.code && error.code === "23505") {
-        throw new HttpException(
-          `User with this email already exists.`,
-          HttpStatus.BAD_REQUEST
-        );
+      if (error.name && error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Cannot create user.",
-      };
+        error: 'Email Verification Failed',
+      }
+    }
+  }
+
+  async register (createUserDto: CreateUserInput): Promise<CreateUserOutput> {
+    try {
+      const user = await this.usersRepository.create({
+        ...createUserDto,
+        verified: true,
+      })
+      await this.usersRepository.save(user)
+      // await this.verificationRepository.save(
+      //   this.verificationRepository.create({ user })
+      // );
+      // //  send email here
+      return {
+        ok: true,
+      }
+    } catch (error) {
+      if (error.code && error.code === '23505') {
+        throw new HttpException(
+          `User with this email already exists.`,
+          HttpStatus.BAD_REQUEST
+        )
+      }
+      return {
+        ok: false,
+        error: 'Cannot create user.',
+      }
     }
   }
 
@@ -59,75 +95,84 @@ export class UserService {
     try {
       const user = await this.usersRepository.findOne(
         { email },
-        { select: ["email", "password", "verified"] }
-      );
+        { select: ['email', 'password', 'verified', 'disabled'] }
+      )
       if (!user) {
         throw new HttpException(
-          "Invalid email / password.",
+          'Invalid email / password.',
           HttpStatus.BAD_REQUEST
-        );
+        )
       }
       if (!user.verified) {
         throw new HttpException(
-          "You need to verify your email first.",
+          'You need to verify your email first.',
           HttpStatus.BAD_REQUEST
-        );
+        )
       }
       if (!(await user.checkPassword(password))) {
-        throw new HttpException("Incorrect Password", HttpStatus.BAD_REQUEST);
+        throw new HttpException('Incorrect Password', HttpStatus.BAD_REQUEST)
+      }
+      if (user.disabled) {
+        throw new HttpException(
+          'Your account has been disabled.',
+          HttpStatus.BAD_REQUEST
+        )
       }
       // generate token
-      const loggedInUser = await this.usersRepository.findOne({ email });
-      const token = await this.jwtService.sign(loggedInUser.id);
+      const loggedInUser = await this.usersRepository.findOne(
+        { email },
+        { relations: ['addresses'] }
+      )
+      const token = await this.jwtService.sign(loggedInUser.id)
       return {
         ok: true,
         user: loggedInUser,
         token,
-      };
+      }
     } catch (error) {
       if (error.status === 400) {
-        throw error;
+        throw error
       }
       return {
         ok: false,
-        error: "Login Failed.",
-      };
+        error: 'Login Failed.',
+      }
     }
   }
 
   async findAll (): Promise<GetUsersOutput> {
     try {
-      const users = await this.usersRepository.find();
+      const users = await this.usersRepository.find()
       return {
         ok: true,
         users,
-      };
+      }
     } catch (error) {
       return {
         ok: false,
-        error: "Cannot get all users.",
-      };
+        error: 'Cannot get all users.',
+      }
     }
   }
 
   async findOne ({ id }: GetUserInput): Promise<GetUserOutput> {
     try {
-      const user = await this.usersRepository.findOne({ id });
+      const user = await this.usersRepository.findOne({ id })
       if (!user) {
-        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND)
       }
       return {
         ok: true,
         user,
-      };
+      }
     } catch (error) {
-      if (error && error.name && error.name === "HttpException") {
-        throw error;
+      if (error && error.name && error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Cannot get user.",
-      };
+        error: 'Cannot get user.',
+      }
     }
   }
 
@@ -136,44 +181,44 @@ export class UserService {
     authUser: User
   ): Promise<UpdateUserOutput> {
     try {
-      const { id } = authUser;
-      let user = await this.usersRepository.findOne({ id });
+      const { id } = authUser
+      let user = await this.usersRepository.findOne({ id })
       if (!user) {
-        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND)
       }
       if (email) {
-        user.email = email;
-        user.verified = false;
+        user.email = email
+        // user.verified = false;
 
-        await this.verificationRepository.delete({ user: { id: user.id } });
-        await this.verificationRepository.save(
-          this.verificationRepository.create({ user })
-        );
+        // await this.verificationRepository.delete({ user: { id: user.id } });
+        // await this.verificationRepository.save(
+        //   this.verificationRepository.create({ user })
+        // );
       }
 
       if (name) {
-        user.name = name;
+        user.name = name
       }
 
       if (bio) {
-        user.bio = bio;
+        user.bio = bio
       }
 
-      await this.usersRepository.save(user);
-      user = await this.usersRepository.findOne({ id });
+      await this.usersRepository.save(user)
+      user = await this.usersRepository.findOne({ id })
 
       return {
         ok: true,
         user,
-      };
+      }
     } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
+      if (error.name && error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Cannot update users.",
-      };
+        error: 'Cannot update users.',
+      }
     }
   }
 
@@ -182,81 +227,84 @@ export class UserService {
     authUser: User
   ): Promise<changePasswordOutput> {
     try {
-      const { id } = authUser;
+      const { id } = authUser
       let user = await this.usersRepository.findOne(
         { id },
-        { select: ["password"] }
-      );
+        { select: ['password'] }
+      )
       if (!user) {
-        throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
+        throw new HttpException('User not found.', HttpStatus.NOT_FOUND)
       }
-      const isPasswordCorrect = await user.checkPassword(oldPassword);
+      const isPasswordCorrect = await user.checkPassword(oldPassword)
       if (!isPasswordCorrect) {
-        throw new HttpException("Incorrect Password", HttpStatus.BAD_REQUEST);
+        throw new HttpException('Incorrect Password', HttpStatus.BAD_REQUEST)
       }
       if (await user.checkPassword(newPassword)) {
         throw new HttpException(
           "New password can't be same with old password",
           HttpStatus.BAD_REQUEST
-        );
+        )
       }
-      user = await this.usersRepository.findOne({ id });
-      user.password = newPassword;
-      await this.usersRepository.save(user);
+      user = await this.usersRepository.findOne({ id })
+      user.password = newPassword
+      await this.usersRepository.save(user)
       return {
         ok: true,
-      };
+      }
     } catch (error) {
-      if (error.name === "HttpException") {
-        throw error;
+      if (error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Cannot change password.",
-      };
+        error: 'Cannot change password.',
+      }
     }
   }
 
   async myProfile ({ id }: User): Promise<MyProfileOutput> {
     try {
-      const user = await this.usersRepository.findOne({ id });
+      const user = await this.usersRepository.findOne({ id })
       if (!user) {
-        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND)
       }
       return {
         ok: true,
         user,
-      };
+      }
     } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
+      if (error.name && error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Cannot get user.",
-      };
+        error: 'Cannot get user.',
+      }
     }
   }
 
   async deleteAccount (authUser: User): Promise<DeleteUserOutput> {
     try {
-      const { id } = authUser;
-      const user = await this.usersRepository.findOne({ id });
+      const { id } = authUser
+      const user = await this.usersRepository.findOne({ id })
       if (!user) {
-        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND)
       }
-      await this.usersRepository.delete({ id });
+      if (user.picture) {
+        removeProfilePicture(user.picture)
+      }
+      await this.usersRepository.delete({ id })
       return {
         ok: true,
-      };
+      }
     } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
+      if (error.name && error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Cannot delete users.",
-      };
+        error: 'Cannot delete users.',
+      }
     }
   }
 
@@ -264,36 +312,36 @@ export class UserService {
     try {
       const verification = await this.verificationRepository.findOne(
         { code },
-        { relations: ["user"] }
-      );
+        { relations: ['user'] }
+      )
 
       if (!verification) {
         throw new HttpException(
-          "Invalid verification code",
+          'Invalid verification code',
           HttpStatus.BAD_REQUEST
-        );
+        )
       }
 
       const user = await this.usersRepository.findOne({
         id: verification.user.id,
-      });
-      user.verified = true;
+      })
+      user.verified = true
 
-      await this.verificationRepository.delete({ user: { id: user.id } });
+      await this.verificationRepository.delete({ user: { id: user.id } })
 
-      await this.usersRepository.save(user);
+      await this.usersRepository.save(user)
 
       return {
         ok: true,
-      };
+      }
     } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
+      if (error.name && error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Email Verification Failed",
-      };
+        error: 'Email Verification Failed',
+      }
     }
   }
 
@@ -302,27 +350,44 @@ export class UserService {
     filename: string
   ): Promise<UploadProfilePictureOutput> {
     try {
-      const user = await this.usersRepository.findOne({ id: authUser.id });
+      if (!filename) {
+        throw new HttpException(
+          'image field is required..',
+          HttpStatus.BAD_REQUEST
+        )
+      }
+      const user = await this.usersRepository.findOne({ id: authUser.id })
       if (!user) {
-        throw new HttpException("User not found.", HttpStatus.BAD_REQUEST);
+        throw new HttpException('User not found.', HttpStatus.BAD_REQUEST)
       }
       if (user.id !== authUser.id) {
-        throw new HttpException("Permission denied..", HttpStatus.UNAUTHORIZED);
+        throw new HttpException('Permission denied..', HttpStatus.UNAUTHORIZED)
+      }
+      if (user.picture) {
+        removeProfilePicture(extractFileNameFromUrl(user.picture))
       }
       user.picture =
-        this.configService.get("END_POINT") + `/profile/${filename}`;
-      await this.usersRepository.save(user);
+        this.configService.get('END_POINT') + `/profile/${filename}`
+      await this.usersRepository.save(user)
       return {
         ok: true,
-      };
-    } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
       }
+    } catch (error) {
+      if (error.name && error.name === 'HttpException') {
+        throw error
+      }
+      removeProfilePicture(filename)
       return {
         ok: false,
-        error: "Cannot upload profile picture.",
-      };
+        error: 'Cannot upload profile picture.',
+      }
     }
+  }
+
+  async enableAccount ({ userId }: ToggleDisableInput): Promise<CoreOutput> {
+    return this.toggleDisableStatus(userId, false)
+  }
+  async disableAccount ({ userId }: ToggleDisableInput): Promise<CoreOutput> {
+    return this.toggleDisableStatus(userId, true)
   }
 }
