@@ -48,6 +48,10 @@ export class Product extends CoreEntity {
   @Field(() => String)
   slug: string;
 
+  @Column({ type: String, nullable: true })
+  @Field(() => String)
+  coverImage: string;
+
   @Field(() => [ProductImageItem])
   @OneToMany(() => ProductImageItem, (productItem) => productItem.product, { onDelete: 'CASCADE' })
   images: ProductImageItem[];
