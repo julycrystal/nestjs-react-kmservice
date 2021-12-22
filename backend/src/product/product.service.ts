@@ -11,6 +11,7 @@ import { GetProductInput, GetProductOutput } from './dto/get-product.dto';
 import { Category } from './entities/category.entity';
 import { Product, ProductImageItem } from './entities/product.entity';
 import { UpdateProductInput, UpdateProductOutput } from './dto/update-product.input';
+import { extractFileNameFromUrl, removeProductPicture, removeProductPictures } from 'src/utils/file.utils';
 
 @Injectable()
 export class ProductService {
@@ -70,9 +71,16 @@ export class ProductService {
     productId: string,
   ): Promise<CoreOutput> {
     try {
-      const product = await this.productRepository.findOne({ id: +productId });
+      if (!files || (files && files.length < 1)) {
+        throw new HttpException("images field is required..", HttpStatus.BAD_REQUEST);
+      }
+      const product = await this.productRepository.findOne({ id: +productId }, { relations: ['images'] });
       if (!product) {
         throw new HttpException('Product not found.', HttpStatus.NOT_FOUND);
+      }
+      if (product.images) {
+        let fileNames = product.images.map(image => extractFileNameFromUrl(image.imageUrl))
+        removeProductPictures(fileNames)
       }
       await this.productImageItemRepository.delete({ product });
       await files.forEach(async file => {
@@ -89,9 +97,46 @@ export class ProductService {
       if (error.name && error.name === "HttpException") {
         throw error;
       }
+      removeProductPictures(files)
       return {
         ok: false,
         error: "Can't upload photos.",
+      };
+    }
+  }
+
+  async uploadProductCoverImage (
+    productId: number,
+    filename: string
+  ): Promise<CoreOutput> {
+    try {
+      if (!filename) {
+        throw new HttpException("image field is required..", HttpStatus.BAD_REQUEST);
+      }
+      if (!filename) {
+        throw new HttpException("image file is required.", HttpStatus.BAD_REQUEST);
+      }
+      const product = await this.productRepository.findOne({ id: productId });
+      if (!product) {
+        throw new HttpException("Product not found.", HttpStatus.BAD_REQUEST);
+      }
+      if (product.coverImage) {
+        removeProductPicture(extractFileNameFromUrl(product.coverImage))
+      }
+      product.coverImage =
+        this.configService.get("END_POINT") + `/products/${filename}`;
+      await this.productRepository.save(product);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      if (error.name && error.name === "HttpException") {
+        throw error;
+      }
+      removeProductPicture(filename)
+      return {
+        ok: false,
+        error: "Cannot upload profile picture.",
       };
     }
   }
@@ -161,9 +206,13 @@ export class ProductService {
       if (user.role !== UserRole.Admin) {
         throw new HttpException('Insufficient permissions.', HttpStatus.UNAUTHORIZED);
       }
-      const product = await this.productRepository.findOne({ where: { id } })
+      const product = await this.productRepository.findOne({ where: { id }, relations: ['images'] })
       if (!product) {
         throw new HttpException('Product not found.', HttpStatus.NOT_FOUND);
+      }
+      if (product.images) {
+        let fileNames = product.images.map(image => extractFileNameFromUrl(image.imageUrl))
+        removeProductPictures(fileNames)
       }
       await this.productRepository.delete({ id });
       return {
