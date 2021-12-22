@@ -1,6 +1,6 @@
-import { Controller, Param, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
-import { FilesInterceptor } from "@nestjs/platform-express";
-import { extname } from "path";
+import { Controller, Param, Post, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { extname, join } from "path";
 import { Role } from "src/auth/role.decorator";
 import { ProductService } from "./product.service";
 import { diskStorage } from 'multer';
@@ -18,14 +18,11 @@ export class ProductController {
     @UseInterceptors(
         FilesInterceptor('images', 20, {
             storage: diskStorage({
-                destination: '../uploads/products',
+                destination: join(__dirname, '..', '..', 'uploads', 'products'),
                 filename: (req, file, callback) => {
-                    const name = file.originalname.split('.')[0];
+                    const name = file.originalname.toLowerCase().replace(' ', '-').split('.')[0]
                     const fileExtName = extname(file.originalname);
-                    const randomName = Array(4)
-                        .fill(null)
-                        .map(() => Math.round(Math.random() * 16).toString(16))
-                        .join('');
+                    const randomName = Date.now().toString()
                     callback(null, `product-${name}-${randomName}${fileExtName}`);
                 },
             }),
@@ -40,4 +37,25 @@ export class ProductController {
         return this.productService.uploadProductPhotos(filenames, productId)
     }
 
+    @Role(['Admin'])
+    @Post('uploadCoverImage/:productId')
+    @UseInterceptors(
+        FileInterceptor('image', {
+            storage: diskStorage({
+                destination: join(__dirname, '..', '..', 'uploads', 'products'),
+                filename: (req, file, callback) => {
+                    const name = file.originalname.toLowerCase().replace(' ', '-').split('.')[0]
+                    const fileExtName = extname(file.originalname);
+                    const randomName = Date.now().toString();
+                    callback(null, `${name}-${randomName}${fileExtName}`);
+                },
+            }),
+        }),
+    )
+    async uploadCoverImage (
+        @Param('productId') productId: number,
+        @UploadedFile() file,
+    ): Promise<CoreOutput> {
+        return this.productService.uploadProductCoverImage(productId, file?.filename)
+    }
 }
