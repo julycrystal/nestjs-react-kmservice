@@ -18,7 +18,7 @@ export default function AccountDelete () {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const [mutate, { loading }] = useMutation(DELETE_ACCOUNT_MUTATION, {
+    const [mutate] = useMutation(DELETE_ACCOUNT_MUTATION, {
         onCompleted: ({ deleteAccount }) => {
             if (deleteAccount.ok) {
                 dispatch(logout())
