@@ -77,14 +77,20 @@ export class User extends CoreEntity {
     @IsBoolean()
     verified: boolean;
 
-    @Field(() => String)
+    @Field(() => Boolean, { defaultValue: false })
+    @Column({ default: false })
+    @Type(() => Boolean)
+    @IsBoolean()
+    disabled: boolean;
+
+    @Field(() => String, { nullable: true })
     @Column({ nullable: true })
     @IsString()
     @IsOptional()
     @Type(() => String)
-    bio: string;
+    bio?: string;
 
-    @Field(() => String)
+    @Field(() => String, { nullable: true })
     @Column({ nullable: true })
     @IsString()
     @IsOptional()
@@ -99,7 +105,7 @@ export class User extends CoreEntity {
     @JoinTable()
     wishlists: Product[];
 
-    @Field(() => [Address])
+    @Field(() => [Address], { nullable: true })
     @OneToMany(() => Address, (address) => address.user)
     addresses: Address[];
 
