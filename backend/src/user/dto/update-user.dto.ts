@@ -8,8 +8,8 @@ import { CreateUserInput } from './create-user.dto';
 export class UpdateUserInput extends PartialType(OmitType(CreateUserInput, ['password'])) {
     @IsString()
     @IsOptional()
-    @Field(() => String)
-    bio: string;
+    @Field(() => String, { nullable: true })
+    bio?: string;
 }
 
 @ObjectType()
