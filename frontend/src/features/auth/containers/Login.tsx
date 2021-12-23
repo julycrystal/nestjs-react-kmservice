@@ -10,7 +10,10 @@ import { LOGIN } from "../graphql/auth.graphql";
 import { getErrorMessage } from "../../../utils/getErrorMessage";
 import { saveToken } from "../services/localstorage.service";
 import { login } from "../authSlice";
-import { LoginMutation, LoginMutationVariables } from "../../../__generated__/LoginMutation";
+import {
+    LoginMutation,
+    LoginMutationVariables,
+} from "../../../__generated__/LoginMutation";
 
 export const Login = () => {
     const dispatch = useDispatch();
@@ -25,25 +28,32 @@ export const Login = () => {
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState(null);
 
-    const [loginMutation, { loading: isLoading }] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN, {
-        fetchPolicy: 'no-cache',
+    const [loginMutation, { loading }] = useMutation<
+        LoginMutation,
+        LoginMutationVariables
+    >(LOGIN, {
+        fetchPolicy: "no-cache",
         onCompleted: ({ login: loginMutationResult }) => {
             reset();
-            if (loginMutationResult.ok && loginMutationResult.token && loginMutationResult.user) {
-                saveToken(loginMutationResult.token)
+            if (
+                loginMutationResult.ok &&
+                loginMutationResult.token &&
+                loginMutationResult.user
+            ) {
+                saveToken(loginMutationResult.token);
                 if (loginMutationResult.user) {
                     dispatch(login({ user: loginMutationResult.user }));
                 }
-                navigate('/')
+                navigate("/");
             }
         },
         onError: (error) => {
-            setErrorMessage(getErrorMessage(error))
-        }
+            setErrorMessage(getErrorMessage(error));
+        },
     });
 
     const onSubmit = () => {
-        loginMutation({ variables: { ...getValues() } });
+        loginMutation({ variables: { loginInput: { ...getValues() } } });
     };
 
     const isValid = () => {
@@ -107,7 +117,7 @@ export const Login = () => {
                 {errors.password && <ErrorMessage message={errors.password.message} />}
                 {/* use in nromal design */}
                 <SubmitButton
-                    loading={isLoading}
+                    loading={loading}
                     buttonText="Login"
                     isValid={isValid()}
                 />
