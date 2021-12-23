@@ -1,5 +1,5 @@
 import { ObjectType, Field, InputType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsNumber, IsString, Min } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 import { CoreEntity } from '../../common/entities/core.entity';
 import { Address } from '../../profile/entities/address.entity';
 import { User } from '../../user/entities/user.entity';
@@ -16,7 +16,14 @@ export enum OrderStatus {
   REFUNDED = "REFUNDED",
 }
 
+
+export enum PaymentMethods {
+  CASH_ON_DELIVERY = "CASH_ON_DELIVERY",
+  STRIPE = "STRIPE",
+}
+
 registerEnumType(OrderStatus, { name: "OrderStatus" });
+registerEnumType(PaymentMethods, { name: "PaymentMethods" });
 
 @InputType("OrderInputType", { isAbstract: true })
 @ObjectType()
@@ -33,10 +40,21 @@ export class Order extends CoreEntity {
   @Min(1)
   totalAmount: number;
 
+  @Field(() => Boolean)
+  @Column({ type: Boolean, default: false, })
+  @IsNotEmpty()
+  @IsBoolean()
+  paid: boolean;
+
   @Field(() => OrderStatus)
   @IsEnum(OrderStatus)
   @Column({ type: "enum", enum: OrderStatus, default: OrderStatus.PENDING })
   status: OrderStatus;
+
+  @Field(() => PaymentMethods)
+  @IsEnum(PaymentMethods)
+  @Column({ type: "enum", enum: PaymentMethods, default: PaymentMethods.CASH_ON_DELIVERY })
+  paymentMethod: PaymentMethods;
 
   @Field(() => Address)
   @ManyToOne(() => Address)
