@@ -390,4 +390,26 @@ export class UserService {
   async disableAccount ({ userId }: ToggleDisableInput): Promise<CoreOutput> {
     return this.toggleDisableStatus(userId, true)
   }
+
+  async updateUserRole ({ userId, role }: UpdateUserRoleInput): Promise<UpdateUserRoleOutput> {
+    try {
+      const user = await this.usersRepository.findOne({ id: userId });
+      if (!user) {
+        throw new HttpException('User not found,', HttpStatus.NOT_FOUND)
+      }
+      user.role = role;
+      await this.usersRepository.save(user);
+      return {
+        ok: true,
+      }
+    } catch (error) {
+      if (error.name && error.name === 'HttpException') {
+        throw error
+      }
+      return {
+        ok: false,
+        error: 'Role update failed.',
+      }
+    }
+  }
 }
