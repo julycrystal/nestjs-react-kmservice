@@ -11,6 +11,7 @@ import { MY_PROFILE } from "./features/auth/graphql/auth.graphql";
 import { login } from "./features/auth/authSlice";
 import Profile from "./features/profile/container";
 import PageNotFound from "./components/PageNotFound";
+import Products from "./features/profile/container/admiin/Products";
 
 function App () {
   const [enabled, setEnabled] = useState(false);
@@ -54,6 +55,7 @@ function App () {
           <Route path="/" element={<Home />} />
           <Route path="/auth/*" element={<Auth />} />
           <Route path="/profile/*" element={<Profile />} />
+          <Route path="/products/*" element={<Products />} />
           <Route path="*" element={<PageNotFound />} />
           <Route path="404" element={<PageNotFound />} />
         </Routes>
