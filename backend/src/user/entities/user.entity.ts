@@ -66,7 +66,7 @@ export class User extends CoreEntity {
     @Type(() => String)
     email: string;
 
-    @Field((type) => UserRole)
+    @Field(() => UserRole)
     @Column({ type: "enum", enum: UserRole, default: UserRole.User })
     @IsEnum(UserRole)
     role: UserRole;
@@ -111,7 +111,7 @@ export class User extends CoreEntity {
 
     @Field(() => [ProductEntry])
     @OneToMany(() => ProductEntry, (productEntry) => productEntry.user)
-    products: ProductEntry[];
+    entries: ProductEntry[];
 
     @Field(() => [Order])
     @OneToMany(() => Order, (order) => order.customer)

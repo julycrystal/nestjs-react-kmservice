@@ -136,7 +136,7 @@ export class ProductEntry extends CoreEntity {
   amount: number;
 
   @Field(() => User)
-  @ManyToOne(() => User, user => user.products)
+  @ManyToOne(() => User, user => user.entries)
   user: User;
 
   @Field(() => Product)
