@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User, UserRole } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
 import { CreateProductEntryInput, CreateProductEntryOutput } from "./dto/productEntry/create-entry.dto";
-import { GetProductEntriesOutput } from "./dto/productEntry/get-product-entries.dto";
+import { GetProductEntriesInput, GetProductEntriesOutput } from "./dto/productEntry/get-product-entries.dto";
 import { GetProductEntryInput, GetProductEntryOutput } from "./dto/productEntry/get-product-entry.dto";
 import { ProductEntryDeleteInput, ProductEntryDeleteOutput } from "./dto/productEntry/product-entry-delete.dto";
 import { UpdateProductEntryInput, UpdateProductEntryOutput } from "./dto/productEntry/update-product-entry.dto";
@@ -16,6 +16,8 @@ export class ProductEntryService {
         private readonly productEntryRepository: Repository<ProductEntry>,
         @InjectRepository(Product)
         private readonly productRepository: Repository<Product>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
     ) { }
 
     async createProductEntry (
@@ -107,16 +109,38 @@ export class ProductEntryService {
         }
     }
 
-    async getProductEntries ()
+    async getProductEntries ({ userId, limit, pageNumber }: GetProductEntriesInput)
         : Promise<GetProductEntriesOutput> {
         try {
-            const productEntries = await this.productEntryRepository.find({ relations: ['user', 'product'] })
-            if (!productEntries) {
-                throw new HttpException("Product not found.", HttpStatus.NOT_FOUND);
+            const user = await this.userRepository.findOne({ id: userId });
+            if (!user) {
+                throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
             }
+            const productEntriesCount = await this.productEntryRepository.count({ where: { user } })
+            const totalPages = Math.ceil(productEntriesCount / limit);
+            if (pageNumber > totalPages) {
+                pageNumber = totalPages;
+            }
+            const productEntries = await this.productEntryRepository.find({
+                relations: ['product'],
+                where: { user },
+                take: limit,
+                order: {
+                    id: "DESC"
+                },
+                skip: (pageNumber * limit - limit),
+            });
             return {
                 ok: true,
-                productEntries,
+                data: {
+                    productEntries,
+                    limit,
+                    totalPages,
+                    totalItems: productEntriesCount,
+                    currentPage: pageNumber,
+                    currentPageItems: productEntries.length,
+                }
+
             }
         } catch (error) {
             if (error.name && error.name === "HttpException") {
