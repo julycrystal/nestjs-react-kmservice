@@ -2,15 +2,14 @@ import { gql } from "@apollo/client";
 
 export const ADDRESS_FRAGMENT = gql`
   fragment AddressParts on Address {
-      id
-      updatedAt
-      name
-      company
-      address
-      apartment
-      region
-      country
-      phone
+    id
+    createdAt
+    name
+    city
+    address
+    apartment
+    country
+    note
   }
 `;
 
@@ -24,7 +23,7 @@ export const USER_FRAGMENT = gql`
     bio
     picture
     addresses {
-     ...AddressParts
+      ...AddressParts
     }
   }
   ${ADDRESS_FRAGMENT}
