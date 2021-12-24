@@ -140,14 +140,35 @@ export class UserService {
     }
   }
 
-  async findAll (): Promise<GetUsersOutput> {
+  async getUsers ({ limit, pageNumber }: PaginationInput): Promise<GetUsersOutput> {
     try {
-      const users = await this.usersRepository.find()
+      const totalUsers = await this.usersRepository.count();
+      const totalPages = Math.ceil(totalUsers / limit);
+      if (pageNumber > totalPages) {
+        throw new HttpException('Page index out of bound.', HttpStatus.BAD_REQUEST)
+      }
+      const users = await this.usersRepository.find({
+        relations: ["orders",],
+        take: limit,
+        order: {
+          id: "DESC"
+        },
+        skip: (pageNumber * limit - limit),
+      });
+
       return {
         ok: true,
+        data: {
         users,
+          limit,
+          totalPages,
+          totalItems: totalUsers,
+          currentPage: pageNumber,
+          currentPageItems: users.length,
+        }
       }
     } catch (error) {
+      this.logger.error(error)
       return {
         ok: false,
         error: 'Cannot get all users.',

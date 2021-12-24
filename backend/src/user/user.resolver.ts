@@ -36,8 +36,8 @@ export class UserResolver {
 
     @Query(() => GetUsersOutput)
     @Role(['Admin'])
-    findAll (): Promise<GetUsersOutput> {
-        return this.userService.findAll()
+    getUsers (@Args('getUsersInput') getUsersInput: PaginationInput): Promise<GetUsersOutput> {
+        return this.userService.getUsers(getUsersInput)
     }
 
     @Query(() => MyProfileOutput)
