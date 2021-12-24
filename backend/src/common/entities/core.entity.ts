@@ -14,14 +14,14 @@ export class CoreEntity {
     @IsNumber()
     id: number;
 
+    @Field(() => Date)
     @CreateDateColumn({ select: true })
     @Type(() => Date)
-    @Field(() => Date)
     createdAt: Date;
 
+    @Type(() => Date)
     @UpdateDateColumn({ select: false })
     @Field(() => Date)
-    @Type(type => Date)
     updatedAt: Date;
 
 }
