@@ -24,6 +24,9 @@ import {
 } from 'src/utils/file.utils'
 import { CoreOutput } from 'src/common/dtos/core.output'
 import { ToggleDisableInput } from './dto/toggle-disable-status.dto'
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino'
+import { PaginationInput, PaginationOutput } from '../common/dtos/pagination.output'
+import { UpdateUserRoleInput, UpdateUserRoleOutput } from './dto/update-user-role.dto'
 
 @Injectable()
 export class UserService {
@@ -33,7 +36,9 @@ export class UserService {
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
     private readonly jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    @InjectPinoLogger(UserService.name)
+    private readonly logger: PinoLogger
   ) { }
 
   private async toggleDisableStatus (
@@ -159,7 +164,7 @@ export class UserService {
       return {
         ok: true,
         data: {
-        users,
+          users,
           limit,
           totalPages,
           totalItems: totalUsers,
@@ -176,9 +181,9 @@ export class UserService {
     }
   }
 
-  async findOne ({ id }: GetUserInput): Promise<GetUserOutput> {
+  async getUser ({ id }: GetUserInput): Promise<GetUserOutput> {
     try {
-      const user = await this.usersRepository.findOne({ id })
+      const user = await this.usersRepository.findOne({ id }, { relations: ['addresses', 'orders'] })
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND)
       }
@@ -408,10 +413,10 @@ export class UserService {
   async enableAccount ({ userId }: ToggleDisableInput): Promise<CoreOutput> {
     return this.toggleDisableStatus(userId, false)
   }
+
   async disableAccount ({ userId }: ToggleDisableInput): Promise<CoreOutput> {
     return this.toggleDisableStatus(userId, true)
   }
-
 
   async findOne ({ id }: GetUserInput): Promise<GetUserOutput> {
     try {
@@ -455,4 +460,5 @@ export class UserService {
       }
     }
   }
+
 }
