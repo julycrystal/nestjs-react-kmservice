@@ -3,7 +3,7 @@ import { Type } from "class-transformer";
 import { IsOptional, IsString } from "class-validator";
 import { CoreEntity } from "../../common/entities/core.entity";
 import { User } from "../../user/entities/user.entity";
-import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 
 @InputType("AddressInput", { isAbstract: true })
 @ObjectType()
@@ -16,10 +16,10 @@ export class Address extends CoreEntity {
     @IsString()
     name: string;
 
-    @Column({ type: String },)
+    @Column({ type: String, nullable: true },)
     @IsString()
-    @Field(() => String)
-    company: string;
+    @Field(() => String, { nullable: true },)
+    city: string;
 
     @Column({ type: String },)
     @IsString()
@@ -28,23 +28,20 @@ export class Address extends CoreEntity {
 
     @Column({ type: String, nullable: true },)
     @IsOptional()
-    @Field(() => String)
-    apartment: string;
-
-    @Column({ type: String },)
     @IsString()
-    @Field(() => String)
-    region: string;
+    @Field(() => String, { nullable: true },)
+    apartment: string;
 
     @Column({ type: String },)
     @IsString()
     @Field(() => String)
     country: string;
 
-    @Column({ type: String },)
+    @Column({ type: String, nullable: true },)
     @IsString()
-    @Field(() => String)
-    phone: string;
+    @IsOptional()
+    @Field(() => String, { nullable: true })
+    note: string;
 
     @ManyToOne(() => User, user => user.addresses)
     user: User;
