@@ -15,7 +15,6 @@ export default function EditProfile () {
 
     const dispatch = useDispatch();
 
-    const [enabled, setEnabled] = useState(false);
     const [isChanged, setIsChanged] = useState(false);
     const [loading, setLoading] = useState(false);
     const user = useSelector((state: RootState) => state.auth.user);
