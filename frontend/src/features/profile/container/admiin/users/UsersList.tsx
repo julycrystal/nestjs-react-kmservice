@@ -19,13 +19,12 @@ const UserList = () => {
     const navigate = useNavigate();
     const userPerPage = 10;
 
-    const { loading, data } = useQuery<GetUsers, GetUsersVariables>(GET_USERS, {
+    const { loading } = useQuery<GetUsers, GetUsersVariables>(GET_USERS, {
         variables: { getUsersInput: { pageNumber } },
         fetchPolicy: "no-cache",
         onCompleted: ({ getUsers }) => {
             const { ok, data } = getUsers;
             if (ok && data && data.users) {
-                console.log(data.users.length)
                 setTotalItems(data.totalItems)
                 setUsers(data.users);
             }
