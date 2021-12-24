@@ -1,4 +1,3 @@
-import { IconDefinition } from "@fortawesome/fontawesome-common-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SolidButton } from "./button";
 
@@ -11,11 +10,11 @@ interface IModalProps {
     description: string;
 }
 
-export default function Modal ({ show, onClick, icon, title, description }: IModalProps) {
+export default function Modal ({ show, onClick, icon, title, description, onCancel }: IModalProps) {
     return (
         <div className={`fixed z-10 inset-0 overflow-y-auto ${show ? "block" : "hidden"}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" aria-hidden="true"></div>
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -38,7 +37,7 @@ export default function Modal ({ show, onClick, icon, title, description }: IMod
                     {/* <div className=" px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse"> */}
                     <div className="flex space-x-3 bg-gray-50 flex-row-reverse px-4 py-3">
                         <SolidButton text="Delete" onClick={onClick} classes=" px-2 py-1 ml-4 text-sm" />
-                        <SolidButton text="Cancel" onClick={onClick} classes={"text-sm bg-white border-2 border-black text-gray-900 px-2 py-1"} />
+                        <SolidButton text="Cancel" onClick={onCancel} classes={"text-sm bg-white border-2 border-black text-gray-900 px-2 py-1"} />
                     </div>
                 </div>
             </div>
