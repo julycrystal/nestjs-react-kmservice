@@ -56,10 +56,9 @@ export default function EditProfile () {
     const isValid = () => {
         const dataList: string[] = [name, email];
         const isNotEmpty = dataList.every(item => item && item.trim().length > 0)
-        console.log(`isNotEmpty && isChanged && !isSameWithPrevValue() ${isNotEmpty} && ${isChanged} && ${!isSameWithPrevValue()}`);
         return isNotEmpty && isChanged && !isSameWithPrevValue();
     }
-    console.log(isSameWithPrevValue());
+
     const onSubmit = () => {
         setLoading(true);
         const updateObj = {
