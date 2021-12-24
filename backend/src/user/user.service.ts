@@ -391,6 +391,28 @@ export class UserService {
     return this.toggleDisableStatus(userId, true)
   }
 
+
+  async findOne ({ id }: GetUserInput): Promise<GetUserOutput> {
+    try {
+      const user = await this.usersRepository.findOne({ id })
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+      }
+      return {
+        ok: true,
+        user,
+      }
+    } catch (error) {
+      if (error && error.name && error.name === 'HttpException') {
+        throw error
+      }
+      return {
+        ok: false,
+        error: 'Cannot get user.',
+      }
+    }
+  }
+
   async updateUserRole ({ userId, role }: UpdateUserRoleInput): Promise<UpdateUserRoleOutput> {
     try {
       const user = await this.usersRepository.findOne({ id: userId });
