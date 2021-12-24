@@ -5,12 +5,11 @@ import { Address } from '../entities/address.entity';
 @InputType()
 export class CreateAddressInput extends PickType(Address, [
   "name",
-  "company",
   "address",
   "apartment",
-  "region",
   "country",
-  "phone",
+  "city",
+  "note",
 ]) { }
 
 @ObjectType()
