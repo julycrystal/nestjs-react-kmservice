@@ -17,7 +17,6 @@ export const Register = () => {
     const { email, password, name } = getValues();
     const [mutate, { loading: isLoading }] = useMutation<RegisterMutation, RegisterMutationVariables>(REGISTER_MUTATION, {
         onCompleted: ({ register: data }) => {
-            console.log(data);
             if (data.ok) {
                 navigate('/login')
             }
