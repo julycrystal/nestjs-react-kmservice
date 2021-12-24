@@ -13,6 +13,9 @@ import { GET_ADDRESSES } from "../graphql/profile.graphql";
 const MyAddresses = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [addresses, setAddresses] = useState<AddressParts[]>([]);
+    const [editAddress, setEditAddress] = useState<AddressParts | null>();
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+
     const { loading, refetch } = useQuery<GetAddresses, null>(GET_ADDRESSES, {
         fetchPolicy: "no-cache",
         onCompleted: ({ getAddresses }) => {
@@ -27,6 +30,16 @@ const MyAddresses = () => {
         },
     });
 
+    const editHandler = (address: AddressParts) => {
+        setEditAddress(address);
+        setIsEditing(true);
+    }
+
+    const endEditing = () => {
+        setIsEditing(false);
+        setEditAddress(null);
+    }
+
     if (loading) {
         return <LoadingCmp />;
     }
@@ -39,19 +52,25 @@ const MyAddresses = () => {
         );
     }
 
-    const editHandler = useCallback((id: number) => {
-        console.log('editing');
-    }, [])
-
     return (
         <div id="accountPanel" className="px-10 pt-5 text-gray-900">
             <Header title="My Addresses" description="Update your addresses." />
             <div className="flex items-center justify-between">
                 <h3 className="text-2xl mb-4 font-bold">My Addresses</h3>
-                <AddressForm callback={refetch} />
+                <AddressForm
+                    endEditing={endEditing}
+                    isEditing={isEditing}
+                    addressObj={editAddress}
+                    callback={refetch}
+                />
             </div>
             <hr className="border-black" />
-            {addresses && <AddressList editHandler={editHandler} callback={refetch} addresses={addresses} showActions={true} />}
+            {addresses && <AddressList
+                editHandler={editHandler}
+                callback={refetch}
+                addresses={addresses}
+                showActions={true}
+            />}
         </div>
     );
 };

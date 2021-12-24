@@ -1,22 +1,27 @@
 import { useMutation } from "@apollo/client";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { SubmitButton } from "../../../../shared/button";
 import FormError, { ErrorMessage } from "../../../../shared/error/FormError";
 import { getErrorMessage } from "../../../../utils/getErrorMessage";
+import { AddressParts } from "../../../../__generated__/AddressParts";
 import {
     CreateAddressMutation,
     CreateAddressMutationVariables,
 } from "../../../../__generated__/CreateAddressMutation";
-import { CREATE_ADDRESS_MUTATION } from "../../graphql/profile.graphql";
+import { UpdateAddressMutation, UpdateAddressMutationVariables } from "../../../../__generated__/UpdateAddressMutation";
+import { CREATE_ADDRESS_MUTATION, UPDATE_ADDRESS_MUTATION } from "../../graphql/profile.graphql";
 
 interface IAddressFormProps {
     callback: () => void;
+    addressObj?: AddressParts | null;
+    isEditing?: boolean,
+    endEditing?: () => void,
 }
 
-export default function AddressForm ({ callback }: IAddressFormProps) {
+export default function AddressForm ({ callback, addressObj, isEditing = false, endEditing }: IAddressFormProps) {
     const [showModal, setShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -25,10 +30,36 @@ export default function AddressForm ({ callback }: IAddressFormProps) {
         handleSubmit,
         reset,
         watch,
+        setValue,
         getValues,
         formState: { errors },
-    } = useForm({ mode: "onChange" });
-    const { name, city, address, country } = watch();
+    } = useForm({
+        mode: "onChange",
+        defaultValues: {
+            name: addressObj ? addressObj.name : "",
+            city: addressObj ? addressObj.city : "",
+            country: addressObj ? addressObj.country : "",
+            address: addressObj ? addressObj.address : "",
+            apartment: addressObj ? addressObj.apartment : "",
+            note: addressObj ? addressObj.note : "",
+        },
+    });
+    const { name, city, address, country, apartment, note } = watch();
+
+    useEffect(() => {
+        if (isEditing && !showModal) {
+            setShowModal(true);
+        }
+        if (addressObj) {
+            setValue("name", addressObj ? addressObj.name : "");
+            setValue("city", addressObj ? addressObj.city : "");
+            setValue("country", addressObj ? addressObj.country : "");
+            setValue("address", addressObj ? addressObj.address : "");
+            setValue("apartment", addressObj ? addressObj.apartment : "");
+            setValue("note", addressObj ? addressObj.note : "");
+        }
+
+    }, [isEditing, addressObj])
 
     const [createAddress] = useMutation<
         CreateAddressMutation,
@@ -50,28 +81,84 @@ export default function AddressForm ({ callback }: IAddressFormProps) {
         },
     });
 
-    const isValid = useCallback(() => {
+    const [updateAddress] = useMutation<
+        UpdateAddressMutation,
+        UpdateAddressMutationVariables
+    >(UPDATE_ADDRESS_MUTATION, {
+        onCompleted: ({ updateAddress }) => {
+            if (updateAddress.ok) {
+                setLoading(false);
+                reset();
+                setShowModal(false);
+                if (callback) {
+                    callback();
+                    if (endEditing) {
+                        endEditing()
+                    }
+                }
+            }
+        },
+        onError: (err) => {
+            setLoading(false);
+            setErrorMessage(getErrorMessage(err));
+        },
+    });
+
+    const isUpdateValueValid = () => {
+        const { name, city, address, country, apartment, note } = getValues();
+        const requiredFields: string[] = [name, city, address, country];
+        const result = requiredFields.every(field => field && field.length > 0);
+        const sameWithPrevValue = addressObj && Boolean(
+            (name === addressObj.name) &&
+            (city === addressObj.city) &&
+            (address === addressObj.address) &&
+            (country === addressObj.country) &&
+            (apartment ? apartment === addressObj?.apartment : true) &&
+            (note ? note === addressObj?.note : true)
+        )
         return Boolean(
-            name &&
-            name.length !== 0 &&
-            city &&
-            city.length !== 0 &&
-            address &&
-            address.length !== 0 &&
-            country &&
-            country.length !== 0 &&
+            result &&
+            !sameWithPrevValue &&
+            Object.entries(errors).length === 0
+        );
+    }
+
+    const isValid = useCallback(() => {
+        if (isEditing) {
+            return isUpdateValueValid();
+        }
+        const { name, city, address, country } = getValues();
+        const requiredFields: string[] = [name, city, address, country];
+        const result = requiredFields.every(field => field && field.length > 0);
+        return Boolean(
+            result &&
             Object.entries(errors).length === 0
         );
     }, [name, address, city, country, errors]);
 
     const onSubmit = () => {
         setLoading(true);
-        createAddress({ variables: { createAddressInput: { ...getValues() } } });
+        if (isEditing && addressObj) {
+            const updateObj = {
+                ...((note && addressObj) && (note !== addressObj?.note) && { note }),
+                ...((name && addressObj) && (name !== addressObj?.name) && { name }),
+                ...((apartment && addressObj) && (apartment !== addressObj?.apartment) && { apartment }),
+                ...((country && addressObj) && (country !== addressObj?.country) && { country }),
+                ...((city && addressObj) && (city !== addressObj?.city) && { city }),
+                ...((address && addressObj) && (address !== addressObj?.address) && { address }),
+            }
+            updateAddress({ variables: { updateAddressInput: { ...updateObj, id: addressObj.id } } })
+        } else {
+            createAddress({ variables: { createAddressInput: { ...getValues() } } });
+        }
     };
 
     const closeModal = () => {
         reset();
         setShowModal(false);
+        if (isEditing && endEditing) {
+            endEditing()
+        }
     };
 
     return (
@@ -95,7 +182,7 @@ export default function AddressForm ({ callback }: IAddressFormProps) {
                                     {/*header*/}
                                     <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
                                         <h3 className="text-3xl font-semibold">
-                                            Create New Address
+                                            {addressObj ? "Edit" : "Create New"}  Address
                                         </h3>
                                     </div>
                                     {/*body*/}

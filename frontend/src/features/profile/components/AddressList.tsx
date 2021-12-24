@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client";
 import { faExclamationTriangle, faPencilAlt, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../../../shared/Modal";
 import { getErrorMessage } from "../../../utils/getErrorMessage";
 import { AddressParts } from "../../../__generated__/AddressParts";
@@ -12,7 +12,7 @@ interface IAddressListProps {
     addresses: AddressParts[],
     showActions?: boolean,
     callback?: () => void,
-    editHandler?: (id: number) => void,
+    editHandler?: (address: AddressParts) => void,
 }
 
 const AddressList = ({ addresses, showActions = false, callback, editHandler }: IAddressListProps) => {
@@ -68,7 +68,7 @@ const AddressList = ({ addresses, showActions = false, callback, editHandler }: 
                         <>
                             <div key={address.id} className="my-1 mx-1 shadow-lg px-4 border-2 border-gray-300 py-2 lg:w-48 w-full">
                                 {showActions && editHandler && <div className="text-sm flex justify-end space-x-2">
-                                    <FontAwesomeIcon icon={faPencilAlt} className="cursor-pointer" onClick={() => editHandler(address.id)} />
+                                    <FontAwesomeIcon icon={faPencilAlt} className="cursor-pointer" onClick={() => editHandler(address)} />
                                     <FontAwesomeIcon icon={faTrashAlt} className="cursor-pointer" onClick={() => deleteClickHanler(address.id)} />
                                 </div>}
                                 <p className="font-bold text-black">{address.name}</p>
