@@ -48,10 +48,10 @@ export class UserResolver {
 
     @Role(['Admin'])
     @Query(() => GetUserOutput)
-    findOne (
+    getUser (
         @Args('getUserInput') getUserInput: GetUserInput
     ): Promise<GetUserOutput> {
-        return this.userService.findOne(getUserInput)
+        return this.userService.getUser(getUserInput)
     }
 
     @Mutation(() => UpdateUserOutput)
