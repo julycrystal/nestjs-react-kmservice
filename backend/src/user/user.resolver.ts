@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { CoreOutput } from 'src/common/dtos/core.output'
+import { PaginationInput } from 'src/common/dtos/pagination.output'
 import { AuthUser } from '../auth/auth-user.decorator'
 import { Role } from '../auth/role.decorator'
 import {
@@ -13,6 +14,7 @@ import { GetUsersOutput } from './dto/get-users.dto'
 import { LoginInput, LoginOutput } from './dto/login.dto'
 import { MyProfileOutput } from './dto/my-profile.dto'
 import { ToggleDisableInput } from './dto/toggle-disable-status.dto'
+import { UpdateUserRoleInput, UpdateUserRoleOutput } from './dto/update-user-role.dto'
 import { UpdateUserInput, UpdateUserOutput } from './dto/update-user.dto'
 import { VerifyEmailInput, VerifyEmailOutput } from './dto/verify-email.dto'
 import { User } from './entities/user.entity'
@@ -101,5 +103,14 @@ export class UserResolver {
         @Args('toggleDisableInput') toggleDisableInput: ToggleDisableInput
     ): Promise<CoreOutput> {
         return this.userService.enableAccount(toggleDisableInput)
+    }
+
+    @Role(['Admin'])
+    @Mutation(() => UpdateUserRoleOutput)
+    updateUserRole (
+        @AuthUser() user: User,
+        @Args('updateUserRoleInput') updateUserRoleInput: UpdateUserRoleInput
+    ): Promise<UpdateUserRoleOutput> {
+        return this.userService.updateUserRole(updateUserRoleInput)
     }
 }
