@@ -86,7 +86,7 @@ const UserList = () => {
                             </td>
                             <td className="">
                                 {
-                                    user.disabled ? <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" /> :
+                                    !user.disabled ? <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" /> :
                                         <FontAwesomeIcon icon={faTimesCircle} className="text-red-500" />
                                 }
                             </td>
