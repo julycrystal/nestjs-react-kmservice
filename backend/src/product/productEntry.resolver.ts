@@ -10,7 +10,7 @@ import { CreateProductEntryOutput, CreateProductEntryInput } from './dto/product
 import { GetProductEntryOutput, GetProductEntryInput } from './dto/productEntry/get-product-entry.dto';
 import { ProductEntryDeleteOutput, ProductEntryDeleteInput } from './dto/productEntry/product-entry-delete.dto';
 import { UpdateProductEntryInput, UpdateProductEntryOutput } from './dto/productEntry/update-product-entry.dto';
-import { GetProductEntriesInput, GetProductEntriesOutput } from './dto/productEntry/get-product-entries.dto';
+import { GetProductEntriesByProductInput, GetProductEntriesInput, GetProductEntriesOutput } from './dto/productEntry/get-product-entries.dto';
 
 @Resolver(() => ProductEntry)
 export class ProductEntryResolver {
@@ -28,7 +28,13 @@ export class ProductEntryResolver {
     @Role(['Admin'])
     @Query(() => GetProductEntriesOutput)
     getProductEntriesByUser (@Args("getProductEntriesInput") getProductEntriesInput: GetProductEntriesInput): Promise<GetProductEntriesOutput> {
-        return this.productEntryService.getProductEntries(getProductEntriesInput);
+        return this.productEntryService.getProductEntriesByUser(getProductEntriesInput);
+    }
+
+    @Role(['Admin'])
+    @Query(() => GetProductEntriesOutput)
+    getProductEntriesByProduct (@Args("getProductEntriesByProductInput") getProductEntriesByProductInput: GetProductEntriesByProductInput): Promise<GetProductEntriesOutput> {
+        return this.productEntryService.getProductEntriesByProduct(getProductEntriesByProductInput);
     }
 
     @Role(['Admin'])

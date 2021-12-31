@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User, UserRole } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
 import { CreateProductEntryInput, CreateProductEntryOutput } from "./dto/productEntry/create-entry.dto";
-import { GetProductEntriesInput, GetProductEntriesOutput } from "./dto/productEntry/get-product-entries.dto";
+import { GetProductEntriesByProductInput, GetProductEntriesInput, GetProductEntriesOutput } from "./dto/productEntry/get-product-entries.dto";
 import { GetProductEntryInput, GetProductEntryOutput } from "./dto/productEntry/get-product-entry.dto";
 import { ProductEntryDeleteInput, ProductEntryDeleteOutput } from "./dto/productEntry/product-entry-delete.dto";
 import { UpdateProductEntryInput, UpdateProductEntryOutput } from "./dto/productEntry/update-product-entry.dto";
@@ -109,7 +109,7 @@ export class ProductEntryService {
         }
     }
 
-    async getProductEntries ({ userId, limit, pageNumber }: GetProductEntriesInput)
+    async getProductEntriesByUser ({ userId, limit, pageNumber }: GetProductEntriesInput)
         : Promise<GetProductEntriesOutput> {
         try {
             const user = await this.userRepository.findOne({ id: userId });
@@ -124,6 +124,50 @@ export class ProductEntryService {
             const productEntries = await this.productEntryRepository.find({
                 relations: ['product'],
                 where: { user },
+                take: limit,
+                order: {
+                    id: "DESC"
+                },
+                skip: (pageNumber * limit - limit),
+            });
+            return {
+                ok: true,
+                data: {
+                    productEntries,
+                    limit,
+                    totalPages,
+                    totalItems: productEntriesCount,
+                    currentPage: pageNumber,
+                    currentPageItems: productEntries.length,
+                }
+
+            }
+        } catch (error) {
+            if (error.name && error.name === "HttpException") {
+                throw error;
+            }
+            return {
+                ok: false,
+                error: "Can't create product.",
+            };
+        }
+    }
+
+    async getProductEntriesByProduct ({ limit, pageNumber, productId }: GetProductEntriesByProductInput)
+        : Promise<GetProductEntriesOutput> {
+        try {
+            const product = await this.productRepository.findOne({ id: productId });
+            if (!product) {
+                throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
+            }
+            const productEntriesCount = await this.productEntryRepository.count({ where: { product } })
+            const totalPages = Math.ceil(productEntriesCount / limit);
+            if (pageNumber > totalPages) {
+                pageNumber = totalPages;
+            }
+            const productEntries = await this.productEntryRepository.find({
+                relations: ['product', 'user'],
+                where: { product },
                 take: limit,
                 order: {
                     id: "DESC"
