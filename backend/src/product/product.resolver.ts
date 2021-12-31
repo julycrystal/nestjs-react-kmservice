@@ -7,8 +7,9 @@ import { AuthUser } from '../auth/auth-user.decorator';
 import { User } from '../user/entities/user.entity';
 import { ProductDeleteInput, ProductDeleteOutput } from './dto/product-delete.dto';
 import { GetProductInput, GetProductOutput } from './dto/get-product.dto';
-import { AllProductOutput } from './dto/all-product.dto';
+import { GetProductsOutput } from './dto/all-product.dto';
 import { UpdateProductInput, UpdateProductOutput } from './dto/update-product.input';
+import { PaginationInput } from 'src/common/dtos/pagination.output';
 
 @Resolver(() => Product)
 export class ProductResolver {
@@ -23,14 +24,14 @@ export class ProductResolver {
     return this.productService.create(createProductInput, user);
   }
 
-  @Query(() => AllProductOutput)
-  products (): Promise<AllProductOutput> {
-    return this.productService.findAll();
+  @Query(() => GetProductsOutput)
+  getProducts (@Args('getProductsInput') getProductsInput: PaginationInput): Promise<GetProductsOutput> {
+    return this.productService.getProducts(getProductsInput);
   }
 
   @Query(() => GetProductOutput)
-  product (@Args('getProductInput') getProductInput: GetProductInput): Promise<GetProductOutput> {
-    return this.productService.findOne(getProductInput);
+  getProduct (@Args('getProductInput') getProductInput: GetProductInput): Promise<GetProductOutput> {
+    return this.productService.getProduct(getProductInput);
   }
 
   @Role(['Admin'])
