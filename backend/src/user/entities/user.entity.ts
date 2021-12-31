@@ -90,13 +90,6 @@ export class User extends CoreEntity {
     @Type(() => String)
     bio?: string;
 
-    @Field(() => String, { nullable: true })
-    @Column({ nullable: true })
-    @IsString()
-    @IsOptional()
-    @Type(() => String)
-    picture: string;
-
     @Field(() => [Review])
     @OneToMany(() => Review, (review) => review.user)
     reviews: Review[];
