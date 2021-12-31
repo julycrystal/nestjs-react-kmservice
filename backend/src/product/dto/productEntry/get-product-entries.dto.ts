@@ -11,6 +11,14 @@ export class GetProductEntriesInput extends PaginationInput {
     userId: number;
 }
 
+
+@InputType({ isAbstract: true })
+export class GetProductEntriesByProductInput extends PaginationInput {
+    @Field(() => Int)
+    @IsNumber()
+    productId: number;
+}
+
 @ObjectType()
 export class ProductEntriesOutput extends PaginationOutput {
     @Field(() => [ProductEntry])
