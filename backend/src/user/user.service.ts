@@ -150,7 +150,7 @@ export class UserService {
       const totalUsers = await this.usersRepository.count();
       const totalPages = Math.ceil(totalUsers / limit);
       if (pageNumber > totalPages) {
-        throw new HttpException('Page index out of bound.', HttpStatus.BAD_REQUEST)
+        pageNumber = totalPages;
       }
       const users = await this.usersRepository.find({
         relations: ["orders",],
@@ -316,9 +316,6 @@ export class UserService {
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND)
       }
-      if (user.picture) {
-        removeProfilePicture(user.picture)
-      }
       await this.usersRepository.delete({ id })
       return {
         ok: true,
@@ -367,45 +364,6 @@ export class UserService {
       return {
         ok: false,
         error: 'Email Verification Failed',
-      }
-    }
-  }
-
-  async uploadProfilePicture (
-    authUser: User,
-    filename: string
-  ): Promise<UploadProfilePictureOutput> {
-    try {
-      if (!filename) {
-        throw new HttpException(
-          'image field is required..',
-          HttpStatus.BAD_REQUEST
-        )
-      }
-      const user = await this.usersRepository.findOne({ id: authUser.id })
-      if (!user) {
-        throw new HttpException('User not found.', HttpStatus.BAD_REQUEST)
-      }
-      if (user.id !== authUser.id) {
-        throw new HttpException('Permission denied..', HttpStatus.UNAUTHORIZED)
-      }
-      if (user.picture) {
-        removeProfilePicture(extractFileNameFromUrl(user.picture))
-      }
-      user.picture =
-        this.configService.get('END_POINT') + `/profile/${filename}`
-      await this.usersRepository.save(user)
-      return {
-        ok: true,
-      }
-    } catch (error) {
-      if (error.name && error.name === 'HttpException') {
-        throw error
-      }
-      removeProfilePicture(filename)
-      return {
-        ok: false,
-        error: 'Cannot upload profile picture.',
       }
     }
   }
