@@ -22,4 +22,7 @@ export class CreateProductInput extends PickType(
 }
 
 @ObjectType()
-export class CreateProductOutput extends CoreOutput { }
+export class CreateProductOutput extends CoreOutput {
+  @Field(() => Number)
+  productId?: number;
+}
