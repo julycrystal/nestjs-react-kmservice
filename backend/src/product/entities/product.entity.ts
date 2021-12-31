@@ -49,12 +49,8 @@ export class Product extends CoreEntity {
   slug: string;
 
   @Column({ type: String, nullable: true })
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   coverImage: string;
-
-  @Field(() => [ProductImageItem])
-  @OneToMany(() => ProductImageItem, (productItem) => productItem.product, { onDelete: 'CASCADE' })
-  images: ProductImageItem[];
 
   @Field(() => Float)
   @Column({ type: Number, nullable: false })
@@ -94,6 +90,9 @@ export class Product extends CoreEntity {
   @OneToMany(() => Review, (review) => review.product, { onDelete: 'CASCADE' })
   reviews: Review[];
 
+  @OneToMany(() => ProductEntry, (entry) => entry.product, { onDelete: 'CASCADE' })
+  entries: ProductEntry[];
+
   @BeforeInsert()
   async createSlug () {
     if (this.title) {
@@ -102,21 +101,6 @@ export class Product extends CoreEntity {
         .replace(/ /g, "")}${Date.now()}`;
     }
   }
-}
-
-@ObjectType()
-@Entity()
-@InputType("ProductImageItemInputType", { isAbstract: true })
-export class ProductImageItem extends CoreEntity {
-  @Column({ type: String })
-  @Field(() => String)
-  @IsString()
-  imageUrl: string;
-
-  @ManyToOne(() => Product, (product) => product.images, {
-    onDelete: "CASCADE",
-  })
-  product: Product;
 }
 
 @InputType("ProductEntryInputType", { isAbstract: true })
@@ -140,7 +124,7 @@ export class ProductEntry extends CoreEntity {
   user: User;
 
   @Field(() => Product)
-  @ManyToOne(() => Product, (product) => product.images, {
+  @ManyToOne(() => Product, (product) => product.entries, {
     onDelete: "CASCADE",
   })
   product: Product;
