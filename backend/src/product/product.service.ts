@@ -4,14 +4,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CoreOutput } from '../common/dtos/core.output';
 import { User, UserRole } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
-import { AllProductOutput } from './dto/all-product.dto';
+import { GetProductsOutput } from './dto/all-product.dto';
 import { CreateProductInput, CreateProductOutput } from './dto/create-product.dto';
 import { ProductDeleteInput, ProductDeleteOutput } from './dto/product-delete.dto';
 import { GetProductInput, GetProductOutput } from './dto/get-product.dto';
 import { Category } from './entities/category.entity';
-import { Product, ProductImageItem } from './entities/product.entity';
+import { Product } from './entities/product.entity';
 import { UpdateProductInput, UpdateProductOutput } from './dto/update-product.input';
 import { extractFileNameFromUrl, removeProductPicture, removeProductPictures } from 'src/utils/file.utils';
+import { PaginationInput } from 'src/common/dtos/pagination.output';
 
 @Injectable()
 export class ProductService {
@@ -21,8 +22,6 @@ export class ProductService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
-    @InjectRepository(ProductImageItem)
-    private readonly productImageItemRepository: Repository<ProductImageItem>,
     private configService: ConfigService,
   ) { }
 
@@ -51,9 +50,10 @@ export class ProductService {
         throw new HttpException('Cannot create product.', HttpStatus.BAD_REQUEST);
       }
       const product = await this.productRepository.create({ ...createProductInput, category })
-      await this.productRepository.save(product);
+      const savedProduct = await this.productRepository.save(product);
       return {
         ok: true,
+        productId: savedProduct.id
       }
     } catch (error) {
       if (error.name && error.name === "HttpException") {
@@ -62,45 +62,6 @@ export class ProductService {
       return {
         ok: false,
         error: "Can't create product.",
-      };
-    }
-  }
-
-  async uploadProductPhotos (
-    files: string[],
-    productId: string,
-  ): Promise<CoreOutput> {
-    try {
-      if (!files || (files && files.length < 1)) {
-        throw new HttpException("images field is required..", HttpStatus.BAD_REQUEST);
-      }
-      const product = await this.productRepository.findOne({ id: +productId }, { relations: ['images'] });
-      if (!product) {
-        throw new HttpException('Product not found.', HttpStatus.NOT_FOUND);
-      }
-      if (product.images) {
-        let fileNames = product.images.map(image => extractFileNameFromUrl(image.imageUrl))
-        removeProductPictures(fileNames)
-      }
-      await this.productImageItemRepository.delete({ product });
-      await files.forEach(async file => {
-        let createdProductImageItem = await this.productImageItemRepository.create({
-          imageUrl: this.configService.get("END_POINT") + `/product/${file}`,
-          product,
-        });
-        await this.productImageItemRepository.save(createdProductImageItem);
-      });
-      return {
-        ok: true,
-      }
-    } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
-      }
-      removeProductPictures(files)
-      return {
-        ok: false,
-        error: "Can't upload photos.",
       };
     }
   }
@@ -141,12 +102,31 @@ export class ProductService {
     }
   }
 
-  async findAll (): Promise<AllProductOutput> {
+  async getProducts ({ limit, pageNumber }: PaginationInput): Promise<GetProductsOutput> {
     try {
-      const products = await this.productRepository.find({ relations: ['images', 'category'] })
+      const totalProducts = await this.productRepository.count();
+      const totalPages = Math.ceil(totalProducts / limit);
+      if (pageNumber > totalPages) {
+        pageNumber = totalPages;
+      }
+      const products = await this.productRepository.find({
+        relations: ["category",],
+        take: limit,
+        order: {
+          id: "DESC"
+        },
+        skip: (pageNumber * limit - limit),
+      });
       return {
         ok: true,
-        products,
+        data: {
+          products,
+          limit,
+          totalPages,
+          totalItems: totalProducts,
+          currentPage: pageNumber,
+          currentPageItems: products.length,
+        }
       }
     } catch (error) {
       if (error.name && error.name === "HttpException") {
@@ -159,7 +139,7 @@ export class ProductService {
     }
   }
 
-  async findOne ({ id }: GetProductInput): Promise<GetProductOutput> {
+  async getProduct ({ id }: GetProductInput): Promise<GetProductOutput> {
     try {
       const product = await this.productRepository.findOne({ where: { id }, relations: ['category'] })
       if (!product) {
@@ -209,10 +189,6 @@ export class ProductService {
       const product = await this.productRepository.findOne({ where: { id }, relations: ['images'] })
       if (!product) {
         throw new HttpException('Product not found.', HttpStatus.NOT_FOUND);
-      }
-      if (product.images) {
-        let fileNames = product.images.map(image => extractFileNameFromUrl(image.imageUrl))
-        removeProductPictures(fileNames)
       }
       await this.productRepository.delete({ id });
       return {
