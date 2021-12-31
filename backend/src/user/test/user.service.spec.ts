@@ -232,7 +232,7 @@ describe('UserService', () => {
 
       it("should return a user", async () => {
         userRepository.findOne.mockResolvedValueOnce(getUserStub());
-        getUserOutput = await service.findOne({ id: 1 });
+        getUserOutput = await service.getUser({ id: 1 });
 
         expect(userRepository.findOne).toHaveBeenCalledTimes(1);
         expect(userRepository.findOne).toHaveBeenCalledWith({ id: 1 });
@@ -244,7 +244,7 @@ describe('UserService', () => {
 
       it('should fail on error.', async () => {
         userRepository.findOne.mockRejectedValueOnce(new Error(''));
-        getUserOutput = await service.findOne({ id: 1 });
+        getUserOutput = await service.getUser({ id: 1 });
         expect(userRepository.findOne).toHaveBeenCalledTimes(1);
         expect(userRepository.findOne).toHaveBeenCalledWith({ id: 1 });
 
@@ -257,7 +257,7 @@ describe('UserService', () => {
         userRepository.findOne.mockResolvedValueOnce(null);
         getUserOutput = null;
         try {
-          getUserOutput = await service.findOne({ id: 1 });
+          getUserOutput = await service.getUser({ id: 1 });
         } catch (error) {
           expect(userRepository.findOne).toHaveBeenCalledTimes(1);
           expect(userRepository.findOne).toHaveBeenCalledWith({ id: 1 });
