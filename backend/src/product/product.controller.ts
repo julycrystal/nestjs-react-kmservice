@@ -12,31 +12,6 @@ export class ProductController {
     constructor(
         private readonly productService: ProductService,
     ) { }
-
-    @Role(['Admin'])
-    @Post('upload/:productId')
-    @UseInterceptors(
-        FilesInterceptor('images', 20, {
-            storage: diskStorage({
-                destination: join(__dirname, '..', '..', 'uploads', 'products'),
-                filename: (req, file, callback) => {
-                    const name = file.originalname.toLowerCase().replace(' ', '-').split('.')[0]
-                    const fileExtName = extname(file.originalname);
-                    const randomName = Date.now().toString()
-                    callback(null, `product-${name}-${randomName}${fileExtName}`);
-                },
-            }),
-            fileFilter: imageFileFilter,
-        }),
-    )
-    async upload (
-        @Param('productId') productId,
-        @UploadedFiles() files,
-    ): Promise<CoreOutput> {
-        const filenames = files.map(file => file.filename);
-        return this.productService.uploadProductPhotos(filenames, productId)
-    }
-
     @Role(['Admin'])
     @Post('uploadCoverImage/:productId')
     @UseInterceptors(
