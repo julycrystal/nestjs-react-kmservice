@@ -1,12 +1,13 @@
 import { Field, InputType, ObjectType, PartialType } from '@nestjs/graphql';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 import { CoreOutput } from '../../common/dtos/core.output';
 import { CreateAddressInput } from './create-address.dto';
 
 @InputType()
 export class UpdateAddressInput extends PartialType(CreateAddressInput) {
     @IsNotEmpty()
-    @Field(() => String)
+    @Field(() => Number)
+    @IsNumber()
     id: number;
 }
 
