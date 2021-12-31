@@ -16,7 +16,6 @@ import { User } from 'src/user/entities/user.entity';
     TypeOrmModule.forFeature([
       Category,
       Product,
-      ProductImageItem,
       User,
       ProductEntry,
     ]),
