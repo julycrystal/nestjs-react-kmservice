@@ -21,7 +21,6 @@ export const USER_FRAGMENT = gql`
     email
     role
     bio
-    picture
     addresses {
       ...AddressParts
     }
