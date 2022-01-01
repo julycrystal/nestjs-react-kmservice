@@ -19,7 +19,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { Category } from "./category.entity";
-import { Review } from "./review.entity";
+import { Review } from "../../review/entities/review.entity";
 
 export enum ProductStatus {
   SOLDOUT = "SOLDOUT",
