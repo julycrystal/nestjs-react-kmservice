@@ -3,7 +3,7 @@ import { IsString } from "class-validator";
 import { CoreEntity } from "../../common/entities/core.entity";
 import { User } from "../../user/entities/user.entity";
 import { Column, Entity, ManyToOne } from "typeorm";
-import { Product } from "./product.entity";
+import { Product } from "src/product/entities/product.entity";
 
 @InputType("ReviewInputType", { isAbstract: true })
 @ObjectType()
