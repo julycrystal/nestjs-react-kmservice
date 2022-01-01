@@ -13,18 +13,21 @@ import { LoggerModule } from 'nestjs-pino'
 import {
   Product,
   ProductEntry,
-  ProductImageItem,
 } from './product/entities/product.entity'
 import { Category } from './product/entities/category.entity'
-import { Review } from './product/entities/review.entity'
+import { Review } from './review/entities/review.entity'
 import { ProfileModule } from './profile/profile.module'
 import { Address } from './profile/entities/address.entity'
 import { OrderModule } from './order/order.module'
 import { Order, OrderItem } from './order/entities/order.entity'
 import { SearchModule } from './search/search.module'
+import { join } from 'path'
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
+    LoggerModule.forRoot(),
     GraphQLModule.forRoot({
       playground: process.env.NODE_ENV === 'dev',
       autoSchemaFile: true,
@@ -49,6 +52,9 @@ import { SearchModule } from './search/search.module'
         END_POINT: Joi.string().required(),
       }),
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+    }),
     TypeOrmModule.forRoot({
       logging: true,
       type: 'postgres',
@@ -60,7 +66,6 @@ import { SearchModule } from './search/search.module'
         User,
         Verification,
         Product,
-        ProductImageItem,
         Category,
         ProductEntry,
         Review,
@@ -77,6 +82,7 @@ import { SearchModule } from './search/search.module'
     ProfileModule,
     OrderModule,
     SearchModule,
+    ReviewModule,
   ],
 })
 export class AppModule { }

@@ -25,7 +25,7 @@ import {
     ObjectType,
     registerEnumType,
 } from "@nestjs/graphql";
-import { Review } from "../../product/entities/review.entity";
+import { Review } from "../../review/entities/review.entity";
 import { Address } from "../../profile/entities/address.entity";
 import { Product, ProductEntry } from "../../product/entities/product.entity";
 import { Order } from "../../order/entities/order.entity";
