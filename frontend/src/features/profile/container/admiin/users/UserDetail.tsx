@@ -239,12 +239,6 @@ const UserDetail = () => {
                             </tbody>
                         </table>
                     </div>
-                    <div
-                        className="lg:w-1/3 w-full flex flex-col justify-center items-center bg-white shadow-lg lg:h-full">
-                        {user?.picture && (
-                            <img src={user?.picture} alt={user.name} className=" bg-cover" />
-                        )}
-                    </div>
                 </div>
                 <div className={`py-3 px-5 bg-white shadow-lg mt-3`}>
                     <div
