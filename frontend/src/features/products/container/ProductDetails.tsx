@@ -7,7 +7,7 @@ import {
     faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Spinner } from "../../../shared/loader";
 import {
@@ -20,6 +20,7 @@ import Interweave from "interweave";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, removeCartItem } from "../cart.slice";
 import { RootState } from "../../../app/store";
+import Header from "../../../shared/Header";
 
 const ProductDetails = () => {
 
@@ -34,6 +35,13 @@ const ProductDetails = () => {
         null
     );
 
+    const isInCart = useCallback(
+        () => {
+            return cartItems.some(y => y.product.id === product?.id)
+        },
+        [cartItems, product],
+    )
+
     const [fetchProduct] = useLazyQuery<GetProduct, GetProductVariables>(
         GET_PRODUCT_QUERY,
         {
@@ -44,6 +52,7 @@ const ProductDetails = () => {
                     setProduct(product);
                 }
                 setLoading(false);
+
             },
             onError: (err: any) => {
                 if (err.graphQLErrors) {
@@ -63,6 +72,12 @@ const ProductDetails = () => {
         }
     }, [id, fetchProduct]);
 
+    useEffect(() => {
+        if (isInCart() && id) {
+            const item = cartItems.find(y => y.product.id === +id)
+            setProductCount(item?.quantity || 1)
+        }
+    }, [isInCart, id, cartItems])
 
     if (loading || !product) {
         return (
@@ -74,18 +89,20 @@ const ProductDetails = () => {
 
     const increateAmount = (num: number) => {
         if (product.quantity > productCount) {
+            if (isInCart()) {
+                dispatch(addToCart({ product, quantity: productCount + 1 }))
+            }
             setProductCount(prevValue => prevValue + 1)
         }
     }
 
     const decreaseAmount = (num: number) => {
         if (productCount > 0) {
+            if (isInCart()) {
+                dispatch(addToCart({ product, quantity: productCount - 1 }))
+            }
             setProductCount(prevValue => prevValue - 1)
         }
-    }
-
-    const isInCart = () => {
-        return cartItems.some(y => y.product.id === product.id)
     }
 
     const handleRemoveCart = () => {
@@ -98,6 +115,7 @@ const ProductDetails = () => {
 
     return (
         <div className="lg:w-4/5 lg:mx-auto mx-4 my-6">
+            <Header title={product.title} description={product.description} />
             <div className="flex space-x-2">
                 <div className="w-full">
                     <div className="bg-white shadow-lg">
