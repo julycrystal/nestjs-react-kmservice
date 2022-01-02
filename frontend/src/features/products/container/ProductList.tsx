@@ -58,7 +58,7 @@ const ProductList = () => {
                     <LeftSide />
                 </div>
                 <div className="flex flex-wrap lg:w-4/5 w-full">
-                    {products.map((product => <ProductItem product={product} />))}
+                    {products.map((product => <ProductItem key={product.id} product={product} />))}
                 </div>
             </div>
             <Pagination
