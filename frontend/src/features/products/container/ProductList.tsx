@@ -52,12 +52,12 @@ const ProductList = () => {
     }
 
     return (
-        <div className="py-12">
-            <div className="flex pl-2">
-                <div className="w-1/5">
+        <div className="lg:py-12 py-6">
+            <div className="flex flex-col lg:flex-row pl-2 space-y-4 lg:space-y-0">
+                <div className="lg:w-1/5 w-full">
                     <LeftSide />
                 </div>
-                <div className="flex flex-wrap w-4/5">
+                <div className="flex flex-wrap lg:w-4/5 w-full">
                     {products.map((product => <ProductItem product={product} />))}
                 </div>
             </div>
