@@ -17,8 +17,15 @@ import {
 } from "../../../__generated__/GetProduct";
 import { GET_PRODUCT_QUERY } from "../product.graphql";
 import Interweave from "interweave";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, removeCartItem } from "../cart.slice";
+import { RootState } from "../../../app/store";
 
 const ProductDetails = () => {
+
+    const dispatch = useDispatch();
+    const cartItems = useSelector((state: RootState) => state.cart.items)
+
     const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -77,8 +84,17 @@ const ProductDetails = () => {
         }
     }
 
+    const isInCart = () => {
+        return cartItems.some(y => y.product.id === product.id)
+    }
 
-    const handleAddToCart = () => { }
+    const handleRemoveCart = () => {
+        dispatch(removeCartItem(product))
+    }
+
+    const handleAddToCart = () => {
+        dispatch(addToCart({ product, quantity: productCount }))
+    }
 
     return (
         <div className="lg:w-4/5 lg:mx-auto mx-4 my-6">
@@ -86,10 +102,10 @@ const ProductDetails = () => {
                 <div className="w-full">
                     <div className="bg-white shadow-lg">
                         <div className="flex lg:flex-row md:flex-row flex-col lg:h-96 h-auto">
-                            <div className=" w-4/5 md:w-1/2 lg:h-full flex justify-center" >
+                            <div className="lg:w-4/5 md:w-1/2 lg:h-full flex justify-center" >
                                 <img
                                     alt={product?.title}
-                                    src={product?.coverImage || "place-holder.png"}
+                                    src={product?.coverImage || "/place-holder.png"}
                                     className="lg:h-full"
                                 />
                             </div>
@@ -126,20 +142,25 @@ const ProductDetails = () => {
                                         )}
                                     </p>
                                 </div>
-                                <div className="flex justify-between">
+                                {product.quantity > 0 && <div className="flex justify-between">
                                     <p>Quantity</p>
                                     <div className="text-xs flex items-center">
-                                        {productCount > 0 && <FontAwesomeIcon onClick={decreaseAmount} className="cursor-pointer" icon={faMinus} />}
+                                        {productCount > 1 && <FontAwesomeIcon onClick={decreaseAmount} className="cursor-pointer" icon={faMinus} />}
                                         <p className="mx-2 text-sm mt-auto">{productCount}</p>
                                         {productCount < product.quantity && <FontAwesomeIcon onClick={increateAmount} className="cursor-pointer" icon={faPlus} />}
                                     </div>
-                                </div>
-                                {product?.quantity! > 0 &&
-                                    <div className="flex justify-between">
+                                </div>}
+                                <div className="flex justify-between">
+                                    {(product?.quantity! > 0 && !isInCart()) &&
                                         <button onClick={handleAddToCart} className="text-white bg-black w-full py-2">
                                             Add to Cart
                                         </button>
-                                    </div>}
+                                    }
+                                    {isInCart() && <button onClick={handleRemoveCart} className="text-white bg-black w-full py-2">
+                                        Remove From Cart
+                                    </button>}
+
+                                </div>
                             </div>
                         </div>
                         <div className="bg-white lg:p-8 px-2 py-4 flex flex-col space-y-3">
@@ -148,9 +169,9 @@ const ProductDetails = () => {
                                     <p>Description</p>
                                 </div>
                                 {/* {showDetails && <p className="text-justify"> {renderHTML(product?.description)} */}
-                                <p className="text-justify ml-2">
+                                <div className="text-justify ml-2">
                                     <Interweave content={product?.description} />
-                                </p>
+                                </div>
                             </div>
                             {/* <div className="flex flex-col space-y-3 text-gray-700">
                                 <div className="flex justify-between">
