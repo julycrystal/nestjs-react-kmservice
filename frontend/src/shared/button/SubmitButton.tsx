@@ -12,7 +12,7 @@ export default function SubmitButton ({ loading, isValid, buttonText, classes }:
     return <>
         {
             loading ?
-                <button type="submit" className={`bg-black text-white py-2 mb-4 flex justify-center cursor-wait`
+                <button type="submit" className={`bg-black text-white py-2 mb-4 flex justify-center cursor-wait ${classes ? classes : ""}`
                 }> <Spinner /> </button > :
                 <SolidButton buttonType="submit" classes={`mb-4 ${classes ? classes : ""} ${!isValid && 'cursor-not-allowed bg-gray-600'}`} text={buttonText} onClick={() => { }} />}
     </>
