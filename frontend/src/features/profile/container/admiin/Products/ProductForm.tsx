@@ -8,11 +8,9 @@ import htmlToDraft from "html-to-draftjs";
 import { stateToHTML } from "draft-js-export-html";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import moment from "moment";
 import {
     ADMIN_CREATE_PRODUCT,
     ADMIN_DELETE_PRODUCT_ENTRY,
-    ADMIN_GET_PRODUCT,
     ADMIN_PRODUCT_ENTRY_LIST_QUERY,
     ADMIN_UPDATE_PRODUCT,
 } from "../../../graphql/admin.graphql";
@@ -25,10 +23,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { getErrorMessage } from "../../../../../utils/getErrorMessage";
 import {
     faExclamationTriangle,
-    faPencilAlt,
-    faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ProductEntryForm from "../../../components/admin/product/ProductEntryForm";
 import {
     CreateProduct,
@@ -53,6 +48,7 @@ import {
 } from "../../../../../__generated__/ProductUpdate";
 import ProductEntryList from "../../../components/admin/product/ProductEntryList";
 import ProductImageComponent from "../../../components/admin/product/ProductImageComponent";
+import { GET_PRODUCT_QUERY } from "../../../../products/product.graphql";
 
 interface IProductForm {
     title: string;
@@ -120,7 +116,7 @@ const ProductForm = () => {
     });
 
     const [fetchProductById] = useLazyQuery<GetProduct, GetProductVariables>(
-        ADMIN_GET_PRODUCT,
+        GET_PRODUCT_QUERY,
         {
             fetchPolicy: "no-cache",
             onCompleted: ({ getProduct }) => {
