@@ -1,41 +1,61 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { GetProduct_getProduct_product } from "../../__generated__/GetProduct";
+import { GetProducts_getProducts_data_products } from "../../__generated__/GetProducts";
+
+type ProductType = GetProduct_getProduct_product | GetProducts_getProducts_data_products;
 
 export interface ICartItemState {
-    product: GetProduct_getProduct_product;
+    product: ProductType;
     quantity: number;
 }
 
 export interface ICartState {
-    items?: ICartItemState[];
+    items: ICartItemState[];
 }
+
+const items = JSON.parse(localStorage.getItem("cartItems") || "[]");
 
 const initialState: ICartState = {
-    items: [],
-}
+    items
+};
 
 export const cartSlice = createSlice({
-    name: 'cart',
+    name: "cart",
     initialState,
     reducers: {
-        addToCart: (state, action: PayloadAction<ICartState>) => {
-            // state.user = action.payload.user;
+        addToCart: (state, action: PayloadAction<ICartItemState>) => {
+            const item = action.payload;
+            const existItem = state.items.find(
+                (x) => x.product.id === item.product.id
+            );
+            if (existItem) {
+                state.items = state.items.map((x) =>
+                    x.product === existItem.product ? item : x
+                );
+            } else {
+                state.items = [...state.items, item];
+            }
+            localStorage.setItem("cartItems", JSON.stringify(state.items))
         },
-        updateCart: (state,) => { },
-        deleteCartItem: (state,) => { },
-        getCartItems: (state,) => { },
-        clearCart: (state,) => {
+        removeCartItem: (state, action: PayloadAction<ProductType>) => {
+            state.items = state.items.filter(
+                (x) => x.product.id !== action.payload.id
+            );
+            localStorage.setItem("cartItems", JSON.stringify(state.items))
+        },
+        clearCart: (state) => {
             state.items = [];
+            localStorage.setItem("cartItems", JSON.stringify(state.items))
         },
-    }
-})
+    },
+});
 
 export const {
     addToCart,
-    updateCart,
     clearCart,
-    getCartItems,
-    deleteCartItem,
+    removeCartItem,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
+
+// TODO: refactor
