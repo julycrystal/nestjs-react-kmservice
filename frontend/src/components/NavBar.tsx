@@ -57,10 +57,13 @@ const NavBar = () => {
                     <div className="">
                         <ul className="flex space-x-6 cursor-pointer">
                             <li className="py-2">
-                                <Link to="/" className={"text-xl font-bold"}>KM Blog</Link>
+                                <Link to="/" className={"text-xl font-bold"}>KM Commerce</Link>
                             </li>
                             <li className="py-2">
                                 <NavLink className={({ isActive }) => isActive ? "text-blue-500" : ` hover:text-blue-500`} to="/">Home</NavLink>
+                            </li>
+                            <li className="py-2">
+                                <NavLink className={({ isActive }) => isActive ? "text-blue-500" : ` hover:text-blue-500`} to="/products">Products</NavLink>
                             </li>
                             <li className="py-2">
                                 <NavLink className={({ isActive }) => isActive ? "text-blue-500" : ` hover:text-blue-500`} to="/about">About</NavLink>
