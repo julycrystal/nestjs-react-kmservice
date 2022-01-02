@@ -38,9 +38,36 @@ export const GET_ADDRESSES = gql`
       ok
       error
       addresses {
-     ...AddressParts
-    }
+        ...AddressParts
+      }
     }
   }
   ${ADDRESS_FRAGMENT}
+`;
+
+export const CREATE_ADDRESS_MUTATION = gql`
+  mutation CreateAddressMutation($createAddressInput: CreateAddressInput!) {
+    createAddress(createAddressInput: $createAddressInput) {
+      ok
+      error
+    }
+  }
+`;
+
+export const UPDATE_ADDRESS_MUTATION = gql`
+  mutation UpdateAddressMutation($updateAddressInput: UpdateAddressInput!) {
+    updateAddress(updateAddressInput: $updateAddressInput) {
+      error
+      ok
+    }
+  }
+`;
+
+export const DELETE_ADDRESS_MUTATION = gql`
+  mutation DeleteAddressMutation($deleteAddressInput: DeleteAddressInput!) {
+    deleteAddress(deleteAddressInput: $deleteAddressInput) {
+      ok
+      error
+    }
+  }
 `;
