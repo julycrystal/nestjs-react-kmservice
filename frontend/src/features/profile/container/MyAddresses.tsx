@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { ErrorMessage } from "../../../shared/error/FormError";
 import Header from "../../../shared/Header";
 import LoadingCmp from "../../../shared/loader/LoadingCmp";
@@ -20,7 +20,6 @@ const MyAddresses = () => {
         fetchPolicy: "no-cache",
         onCompleted: ({ getAddresses }) => {
             const { ok, addresses } = getAddresses;
-            console.log(getAddresses)
             if (ok && addresses) {
                 setAddresses(addresses);
             }
