@@ -5,10 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../features/auth/authSlice';
 import { RootState } from '../app/store';
 import { removeToken } from '../features/auth/services/localstorage.service';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
 
 const NavBar = () => {
     const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.auth.user);
+    const cart = useSelector((state: RootState) => state.cart);
     const [open, setOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
 
@@ -74,7 +77,13 @@ const NavBar = () => {
                         </ul>
                     </div>
                 </div>
-                <div className="hidden lg:flex">
+                <div className="hidden lg:flex items-center">
+                    <div className="relative">
+                        <FontAwesomeIcon icon={faCartPlus} />
+                        <div className="absolute -top-3 -right-2 text-xs bg-red-500 text-white font-bold rounded-lg px-1 pt-0.5">
+                            <p>{cart.items?.length}</p>
+                        </div>
+                    </div>
                     <div className="text-sm font-bold">
                         {user?.name ? <Dropdown /> : <>  <NavLink className={({ isActive }) => isActive ? "text-blue-500" : ""} to="/auth/login">
                             Login
