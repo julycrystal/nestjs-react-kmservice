@@ -76,44 +76,46 @@ export default function EditProfile () {
             <p className="mb-3 mt-6 text-gray-500">
                 Edit your profile details.
             </p>
-            <div className="lg:w-1/3">
-                <div className={`mb-2 ${errorMessage ? 'block' : 'hidden'} duration-300 transition-all`}>
-                    {(errorMessage) && <FormError onClick={() => setErrorMessage(null)} message={errorMessage} />}
+            <div className="lg:w-4/5 flex">
+                <div className="w-2/5">
+                    <div className={`mb-2 ${errorMessage ? 'block' : 'hidden'} duration-300 transition-all`}>
+                        {(errorMessage) && <FormError onClick={() => setErrorMessage(null)} message={errorMessage} />}
+                    </div>
+                    <form action="" className="flex flex-col pb-8" onSubmit={handleSubmit(onSubmit)} onChange={() => setIsChanged(true)}>
+                        <input
+                            {...register("name", {
+                                minLength: {
+                                    value: 6,
+                                    message: "The name must be at least 6 characters long."
+                                }, required: "This field is required."
+                            })}
+                            type="text"
+                            placeholder="Your Name"
+                            className="border-2 border-black p-2 md:mb-4 mb-2"
+                        />
+                        {errors.name && errors.name.message && <ErrorMessage message={errors.name.message} />}
+                        <input
+                            {...register("email", {
+                                required: "This field is required.",
+                                pattern: {
+                                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                    message: "Invalid email address"
+                                }
+                            })}
+                            type="email"
+                            placeholder="Your Email"
+                            className="border-2 border-black p-2 md:mb-4 mb-2"
+                        />
+                        {errors.email && errors.email.message && <ErrorMessage message={errors.email.message} />}
+                        <textarea
+                            {...register("bio")}
+                            placeholder="Your Bio"
+                            className="border-2 border-black p-2 md:mb-4 mb-2"
+                        />
+                        {errors.bio && errors.bio.message && <ErrorMessage message={errors.bio.message} />}
+                        <SubmitButton loading={loading} buttonText="Edit Profile" isValid={isValid()} />
+                    </form>
                 </div>
-                <form action="" className="flex flex-col pb-8" onSubmit={handleSubmit(onSubmit)} onChange={() => setIsChanged(true)}>
-                    <input
-                        {...register("name", {
-                            minLength: {
-                                value: 6,
-                                message: "The name must be at least 6 characters long."
-                            }, required: "This field is required."
-                        })}
-                        type="text"
-                        placeholder="Your Name"
-                        className="border-2 border-black p-2 md:mb-4 mb-2"
-                    />
-                    {errors.name && errors.name.message && <ErrorMessage message={errors.name.message} />}
-                    <input
-                        {...register("email", {
-                            required: "This field is required.",
-                            pattern: {
-                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                message: "Invalid email address"
-                            }
-                        })}
-                        type="email"
-                        placeholder="Your Email"
-                        className="border-2 border-black p-2 md:mb-4 mb-2"
-                    />
-                    {errors.email && errors.email.message && <ErrorMessage message={errors.email.message} />}
-                    <textarea
-                        {...register("bio")}
-                        placeholder="Your Bio"
-                        className="border-2 border-black p-2 md:mb-4 mb-2"
-                    />
-                    {errors.bio && errors.bio.message && <ErrorMessage message={errors.bio.message} />}
-                    <SubmitButton loading={loading} buttonText="Edit Profile" isValid={isValid()} />
-                </form>
             </div>
         </div>
 
