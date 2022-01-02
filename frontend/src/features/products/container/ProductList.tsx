@@ -10,7 +10,7 @@ import LeftSide from "../components/LeftSide";
 const ProductList = () => {
 
     const [loading, setLoading] = useState(false);
-    const [products, setProducts] = useState<GetProducts_getProducts_data_products[]>([]);
+    const [products, setProducts] = useState<GetProducts_getProducts_data_products[] | null>(null);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [totalItems, setTotalItems] = useState<number>(0);
     const productPerPage = 10;
@@ -24,7 +24,6 @@ const ProductList = () => {
                 if (ok && data?.products) {
                     setProducts(data.products);
                     setTotalItems(data.totalItems)
-                    console.log(data)
                 }
                 setLoading(false);
             },
@@ -33,6 +32,7 @@ const ProductList = () => {
             }
         }
     );
+
     useEffect(() => {
         fetchProducts({
             variables: {
@@ -45,11 +45,12 @@ const ProductList = () => {
         setPageNumber(data);
     }
 
-    if (loading) {
+    if (loading || !products) {
         return (<div className="h-screen flex items-center justify-center">
             <Spinner height={40} color={"#000"} />
         </div>);
     }
+
     return (
         <div className="py-12">
             <div className="flex pl-2">
