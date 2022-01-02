@@ -2,11 +2,8 @@ import { useLazyQuery } from "@apollo/client";
 import {
     faCheckCircle,
     faMinus,
-    faMinusSquare,
     faPlus,
-    faPlusSquare,
     faStar,
-    faTimes,
     faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -84,19 +81,19 @@ const ProductDetails = () => {
     const handleAddToCart = () => { }
 
     return (
-        <div className="w-4/5 mx-auto my-6">
+        <div className="lg:w-4/5 lg:mx-auto mx-4 my-6">
             <div className="flex space-x-2">
                 <div className="w-full">
                     <div className="bg-white shadow-lg">
-                        <div className="flex h-96">
-                            <div className=" w-4/5 h-96 flex justify-center">
+                        <div className="flex lg:flex-row md:flex-row flex-col lg:h-96 h-auto">
+                            <div className=" w-4/5 md:w-1/2 lg:h-full flex justify-center" >
                                 <img
                                     alt={product?.title}
                                     src={product?.coverImage || "place-holder.png"}
-                                    className="h-full"
+                                    className="lg:h-full"
                                 />
                             </div>
-                            <div className="w-2/5 px-4 py-4 space-y-4 bg-white flex flex-col justify-between h-full">
+                            <div className="lg:w-2/5 md:w-1/2 w-full px-4 py-4 space-y-4 flex flex-col justify-between min-h-full">
                                 <p className="font-bold text-lg">{product?.title}</p>
                                 <p className="font-bold text-sm text-gray-500">{product?.category.name}</p>
                                 <div className="flex space-x-2">
@@ -145,8 +142,7 @@ const ProductDetails = () => {
                                     </div>}
                             </div>
                         </div>
-                        <div className="bg-white p-8 flex flex-col space-y-3">
-
+                        <div className="bg-white lg:p-8 px-2 py-4 flex flex-col space-y-3">
                             <div className="flex flex-col space-y-3 text-gray-700">
                                 <div className="flex justify-between">
                                     <p>Description</p>
@@ -165,7 +161,6 @@ const ProductDetails = () => {
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );
