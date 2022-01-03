@@ -10,6 +10,7 @@ import { GetProductInput, GetProductOutput } from './dto/get-product.dto';
 import { GetProductsOutput } from './dto/all-product.dto';
 import { UpdateProductInput, UpdateProductOutput } from './dto/update-product.input';
 import { PaginationInput } from 'src/common/dtos/pagination.output';
+import { GetNewestProductsOutput, GetPopularProductsOutput } from './dto/get-popular-products.dto';
 
 @Resolver(() => Product)
 export class ProductResolver {
@@ -27,6 +28,16 @@ export class ProductResolver {
   @Query(() => GetProductsOutput)
   getProducts (@Args('getProductsInput') getProductsInput: PaginationInput): Promise<GetProductsOutput> {
     return this.productService.getProducts(getProductsInput);
+  }
+
+  @Query(() => GetPopularProductsOutput)
+  getPopularProducts (): Promise<GetPopularProductsOutput> {
+    return this.productService.getPopularProducts();
+  }
+
+  @Query(() => GetNewestProductsOutput)
+  getNewestProducts (): Promise<GetNewestProductsOutput> {
+    return this.productService.getNewestProducts();
   }
 
   @Query(() => GetProductOutput)

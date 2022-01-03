@@ -13,6 +13,7 @@ import { Product } from './entities/product.entity';
 import { UpdateProductInput, UpdateProductOutput } from './dto/update-product.input';
 import { extractFileNameFromUrl, removeProductPicture, removeProductPictures } from 'src/utils/file.utils';
 import { PaginationInput } from 'src/common/dtos/pagination.output';
+import { GetNewestProductsOutput, GetPopularProductsOutput } from './dto/get-popular-products.dto';
 
 @Injectable()
 export class ProductService {
@@ -139,12 +140,64 @@ export class ProductService {
     }
   }
 
+  async getPopularProducts (): Promise<GetPopularProductsOutput> {
+    try {
+      const products = await this.productRepository.find({
+        relations: ["category",],
+        take: 10,
+        order: {
+          views: "DESC"
+        },
+      });
+      return {
+        ok: true,
+        products,
+      }
+    } catch (error) {
+      if (error.name && error.name === "HttpException") {
+        throw error;
+      }
+      return {
+        ok: false,
+        error: "Can't get popular products.",
+      };
+    }
+  }
+
+  async getNewestProducts (): Promise<GetNewestProductsOutput> {
+    try {
+      const products = await this.productRepository.find({
+        relations: ["category",],
+        take: 10,
+        order: {
+          createdAt: "DESC"
+        },
+      });
+      return {
+        ok: true,
+        products,
+      }
+    } catch (error) {
+      if (error.name && error.name === "HttpException") {
+        throw error;
+      }
+      return {
+        ok: false,
+        error: "Can't get newest products.",
+      };
+    }
+  }
+
+
+
   async getProduct ({ id }: GetProductInput): Promise<GetProductOutput> {
     try {
       const product = await this.productRepository.findOne({ where: { id }, relations: ['category'] })
       if (!product) {
         throw new HttpException('Product not found.', HttpStatus.NOT_FOUND);
       }
+      product.views = product.views + 1;
+      await this.productRepository.save(product);
       return {
         ok: true,
         product,
