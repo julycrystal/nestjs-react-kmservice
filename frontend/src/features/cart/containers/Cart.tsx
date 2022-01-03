@@ -1,6 +1,7 @@
 import { faMinus, faPlus, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { RootState } from "../../../app/store";
 import Header from "../../../shared/Header";
 import {
@@ -27,6 +28,14 @@ const Cart = () => {
         dispatch(removeCartItem(cartItem.product));
     };
 
+    const calculateTotalPrice = () => {
+        let totalPrice = 0;
+        cartItems.forEach(item => {
+            totalPrice += item.quantity * item.product.price;
+        })
+        return totalPrice;
+    }
+
     if (cartItems.length === 0) {
         return <EmptyCart />;
     }
@@ -42,7 +51,7 @@ const Cart = () => {
                 <thead>
                     <tr className="text-center bg-black text-white font-bold text-sm uppercase">
                         <td className="pl-2 py-3">#</td>
-                        <td className="hidden lg:inline-flex lg:py-3 pr-2">Actions</td>
+                        <td className="">Actions</td>
                         <td className="">Name</td>
                         <td className="">Price</td>
                         <td className="">Qty</td>
@@ -54,7 +63,7 @@ const Cart = () => {
                         return (
                             <tr key={index} className="w-full text-center border-b-2 text-sm">
                                 <td className=" py-4">{index + 1}</td>
-                                <td className="hidden lg:inline-flex lg:py-4 pr-2 space-x-2">
+                                <td className="">
                                     <FontAwesomeIcon
                                         icon={faTrashAlt}
                                         title="Delete"
@@ -64,7 +73,7 @@ const Cart = () => {
                                 </td>
                                 <td className="">{cartItem.product.title}</td>
                                 <td className="">{cartItem.product.price}</td>
-                                <td className="flex justify-center items-center">
+                                <td className="flex mt-3 justify-center items-center text-xs">
                                     {cartItem.quantity > 1 && (
                                         <FontAwesomeIcon
                                             onClick={() => decreaseAmount(cartItem)}
@@ -89,10 +98,15 @@ const Cart = () => {
                     })}
                     <tr className="text-right">
                         <td colSpan={5}>Total</td>
-                        <td className="text-center">$ 122</td>
+                        <td className="text-center">$ {calculateTotalPrice()}</td>
                     </tr>
                 </tbody>
             </table>
+            <div className="flex justify-end">
+                <Link to="/checkout" className="bg-black text-white px-4 py-1">
+                    Checkout
+                </Link>
+            </div>
         </div >
     );
 };
