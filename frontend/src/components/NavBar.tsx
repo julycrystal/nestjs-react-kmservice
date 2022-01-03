@@ -78,12 +78,12 @@ const NavBar = () => {
                     </div>
                 </div>
                 <div className="hidden lg:flex items-center">
-                    <div className="relative cursor-pointer">
+                    <Link to="/cart" className="relative">
                         <FontAwesomeIcon icon={faCartPlus} />
                         <div className="absolute -top-3 -right-2 text-xs bg-red-500 text-white font-bold rounded-lg px-1 pt-0.5">
                             <p>{cart.items?.length}</p>
                         </div>
-                    </div>
+                    </Link>
                     <div className="text-sm font-bold">
                         {user?.name ? <Dropdown /> : <>  <NavLink className={({ isActive }) => isActive ? "text-blue-500" : ""} to="/auth/login">
                             Login
