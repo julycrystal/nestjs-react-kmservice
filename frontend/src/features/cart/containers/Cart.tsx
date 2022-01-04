@@ -15,6 +15,7 @@ const Cart = () => {
     const dispatch = useDispatch();
 
     const cartItems = useSelector((state: RootState) => state.cart.items);
+    const totalPrice = useSelector((state: RootState) => state.cart.totalPrice);
 
     const decreaseAmount = (cartItem: ICartItemState) => {
         dispatch(addToCart({ ...cartItem, quantity: cartItem.quantity - 1 }));
@@ -28,20 +29,12 @@ const Cart = () => {
         dispatch(removeCartItem(cartItem.product));
     };
 
-    const calculateTotalPrice = () => {
-        let totalPrice = 0;
-        cartItems.forEach(item => {
-            totalPrice += item.quantity * item.product.price;
-        })
-        return totalPrice;
-    }
-
     if (cartItems.length === 0) {
         return <EmptyCart />;
     }
 
     return (
-        <div className="lg:w-5/6 mx-auto">
+        <div className="lg:w-5/6 mx-auto mb-8">
             <Header title="Cart" description="Your cart." />
             <div className="flex justify-between items-center mt-8">
                 <h3 className="text-2xl font-bold">Your Cart</h3>
@@ -98,7 +91,7 @@ const Cart = () => {
                     })}
                     <tr className="text-right">
                         <td colSpan={5}>Total</td>
-                        <td className="text-center">$ {calculateTotalPrice()}</td>
+                        <td className="text-center">$ {totalPrice}</td>
                     </tr>
                 </tbody>
             </table>
