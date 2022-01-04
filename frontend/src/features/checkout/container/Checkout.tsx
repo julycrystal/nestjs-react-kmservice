@@ -15,11 +15,11 @@ import {
 } from "../../../__generated__/GetAddresses";
 import { CreateOrderInput } from "../../../__generated__/globalTypes";
 import { clearCart } from "../../products/cart.slice";
-import { GET_ADDRESSES } from "../../profile/graphql/profile.graphql";
 import CheckOutTopSection from "../components/CheckOutTopSection";
 import OrderConfirmation from "../components/OrderConfirmation";
-import { CREATE_ORDER } from "../order.graphql";
+import { CREATE_ORDER } from "../../../graphql/order.graphql";
 import Address from "./Address";
+import { GET_ADDRESSES } from "../../../graphql/profile.graphql";
 
 const CASH_ON_DELIVERY = 1;
 const CARD_PAYMENT = 2;
@@ -81,7 +81,7 @@ const Checkout = () => {
 
     const AddressComponent = () => (
         <div>
-            <form className="mt-8 w-4/6 mx-auto flex justify-between space-x-4">
+            <form className="mt-8 lg:w-4/6 lg:mx-auto mx-2 flex justify-between space-x-4">
                 <Address
                     title="Billing Address"
                     name="billingAddress"
@@ -182,7 +182,7 @@ const Checkout = () => {
             </div>
             <div
                 className={`flex ${step > 1 ? "justify-between" : "justify-end"
-                    } mt-8 lg:w-4/6 mx-auto`}
+                    } mt-8 lg:w-4/6 lg:mx-auto mx-2`}
             >
                 {step > 1 && (
                     <button className="bg-black text-white px-4 py-2" onClick={prevStep}>

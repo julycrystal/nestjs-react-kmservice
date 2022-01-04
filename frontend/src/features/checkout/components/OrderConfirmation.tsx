@@ -56,12 +56,12 @@ const OrderConfirmation = ({
 
     const ConfirmationHeader = () => {
         return (
-            <div className="flex items-center justify-between">
-                <p className="text-xl font-bold">Order Confirmation</p>
-                <div className="flex space-x-8">
+            <div className="flex lg:flex-row flex-col lg:items-center lg:justify-between items-start">
+                <p className="lg:text-xl font-bold">Order Confirmation</p>
+                <div className="flex flex-row items-center space-x-8">
                     <div className="flex items-center space-x-4">
                         <p className="text-sm">Order Total:</p>
-                        <p className="text-2xl">$ {cart.totalPrice}</p>
+                        <p className="lg:text-2xl">$ {cart.totalPrice}</p>
                     </div>
                     <PlaceOrderButton />
                 </div>
@@ -112,8 +112,8 @@ const OrderConfirmation = ({
     const InfoConfirmation = () => {
         return (
             <div className="flex flex-col space-y-8 shadow-xl bg-white my-4 px-8 py-8">
-                <div className="flex w-full space-x-8">
-                    <div className="w-1/2 flex flex-col items-start">
+                <div className="flex lg:flex-row flex-col w-full lg:space-x-8 space-y-8">
+                    <div className="lg:w-1/2 flex flex-col items-start">
                         <h1 className="text-lg">Your Information</h1>
                         <hr className="border-black border-dotted w-full my-3" />
                         <div className="text-left space-y-4 flex flex-col w-full text-sm">
@@ -131,7 +131,7 @@ const OrderConfirmation = ({
                             </div>
                         </div>
                     </div>
-                    <div className="w-1/2 flex flex-col items-start">
+                    <div className="lg:w-1/2 flex flex-col items-start">
                         <h1 className="text-lg">Delivery Address</h1>
                         <hr className="border-black border-dotted w-full my-3" />
                         <div className="text-left space-y-2">
@@ -143,8 +143,8 @@ const OrderConfirmation = ({
                         </div>
                     </div>
                 </div>
-                <div className="flex w-full space-x-8">
-                    <div className="w-1/2 flex flex-col items-start">
+                <div className="flex lg:flex-row flex-col w-full lg:space-x-8 space-y-8">
+                    <div className="lg:w-1/2 flex flex-col items-start">
                         <h1 className="text-lg">Payment</h1>
                         <hr className="border-black border-dotted w-full mt-3" />
                         <div className="h-full w-full flex items-center justify-center">
@@ -153,7 +153,7 @@ const OrderConfirmation = ({
                             </p>
                         </div>
                     </div>
-                    <div className="w-1/2 flex flex-col items-start">
+                    <div className="lg:w-1/2 flex flex-col items-start">
                         <h1 className="text-lg">Billing Address</h1>
                         <hr className="border-black border-dotted w-full my-3" />
                         <div className="text-left space-y-2">
