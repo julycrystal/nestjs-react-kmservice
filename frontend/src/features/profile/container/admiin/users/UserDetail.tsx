@@ -26,7 +26,7 @@ import {
     GET_ENTRIES_BY_USER,
     GET_USER,
     UPDATE_USER_ROLE,
-} from "../../../graphql/admin.graphql";
+} from "../../../../../graphql/admin.graphql";
 import {
     GetProductEntriesByUser,
     GetProductEntriesByUserVariables,

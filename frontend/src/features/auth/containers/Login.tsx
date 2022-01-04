@@ -6,7 +6,7 @@ import FormError, { ErrorMessage } from "../../../shared/error/FormError";
 import { SubmitButton } from "../../../shared/button";
 import Header from "../../../shared/Header";
 import { useMutation } from "@apollo/client";
-import { LOGIN } from "../graphql/auth.graphql";
+import { LOGIN } from "../../../graphql/auth.graphql";
 import { getErrorMessage } from "../../../utils/getErrorMessage";
 import { saveToken } from "../services/localstorage.service";
 import { login } from "../authSlice";

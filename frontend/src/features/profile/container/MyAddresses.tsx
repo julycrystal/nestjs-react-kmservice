@@ -8,7 +8,7 @@ import { AddressParts } from "../../../__generated__/AddressParts";
 import { GetAddresses } from "../../../__generated__/GetAddresses";
 import AddressForm from "../components/admin/AddressForm";
 import AddressList from "../components/AddressList";
-import { GET_ADDRESSES } from "../graphql/profile.graphql";
+import { GET_ADDRESSES } from "../../../graphql/profile.graphql";
 
 const MyAddresses = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);

@@ -3,13 +3,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
+import { UPDATE_PROFILE_MUTATION } from "../../../graphql/profile.graphql";
 import { SubmitButton } from "../../../shared/button";
 import FormError, { ErrorMessage } from "../../../shared/error/FormError";
 import Header from "../../../shared/Header";
 import { getErrorMessage } from "../../../utils/getErrorMessage";
 import { UpdateProfileMutation, UpdateProfileMutationVariables } from "../../../__generated__/UpdateProfileMutation";
 import { login } from "../../auth/authSlice";
-import { UPDATE_PROFILE_MUTATION } from "../graphql/profile.graphql";
 
 export default function EditProfile () {
 

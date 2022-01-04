@@ -3,6 +3,7 @@ import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { CREATE_ADDRESS_MUTATION, UPDATE_ADDRESS_MUTATION } from "../../../../graphql/profile.graphql";
 import { SubmitButton } from "../../../../shared/button";
 import FormError, { ErrorMessage } from "../../../../shared/error/FormError";
 import { getErrorMessage } from "../../../../utils/getErrorMessage";
@@ -12,7 +13,6 @@ import {
     CreateAddressMutationVariables,
 } from "../../../../__generated__/CreateAddressMutation";
 import { UpdateAddressMutation, UpdateAddressMutationVariables } from "../../../../__generated__/UpdateAddressMutation";
-import { CREATE_ADDRESS_MUTATION, UPDATE_ADDRESS_MUTATION } from "../../graphql/profile.graphql";
 
 interface IAddressFormProps {
     callback: () => void;

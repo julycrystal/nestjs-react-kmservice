@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { CHANGE_PASSWORD_MUTATION } from "../../../graphql/profile.graphql";
 import { SubmitButton } from "../../../shared/button";
 import FormError, { ErrorMessage } from "../../../shared/error/FormError";
 import Header from "../../../shared/Header";
@@ -13,7 +14,6 @@ import {
 } from "../../../__generated__/ChangePasswordMutation";
 import { logout } from "../../auth/authSlice";
 import { removeToken } from "../../auth/services/localstorage.service";
-import { CHANGE_PASSWORD_MUTATION } from "../graphql/profile.graphql";
 
 export default function ChangePassword () {
     const navigate = useNavigate();

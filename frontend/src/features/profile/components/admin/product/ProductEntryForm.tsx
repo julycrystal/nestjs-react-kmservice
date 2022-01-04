@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useMutation } from "@apollo/client";
 import { CreateProductEntry, CreateProductEntryVariables } from "../../../../../__generated__/CreateProductEntry";
-import { ADMIN_CREATE_PRODUCT_ENTRY, ADMIN_UPDATE_PRODUCT_ENTRY } from "../../../graphql/admin.graphql";
+import { ADMIN_CREATE_PRODUCT_ENTRY, ADMIN_UPDATE_PRODUCT_ENTRY } from "../../../../../graphql/admin.graphql";
 import { getErrorMessage } from "../../../../../utils/getErrorMessage";
 import { SubmitButton } from "../../../../../shared/button";
 import { GetProductEntriesByProduct_getProductEntriesByProduct_data_productEntries } from "../../../../../__generated__/GetProductEntriesByProduct";

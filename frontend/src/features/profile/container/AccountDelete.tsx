@@ -3,11 +3,11 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { DELETE_ACCOUNT_MUTATION } from "../../../graphql/profile.graphql";
 import { SolidButton } from "../../../shared/button";
 import Header from "../../../shared/Header";
 import Modal from "../../../shared/Modal";
 import { logout } from "../../auth/authSlice";
-import { DELETE_ACCOUNT_MUTATION } from "../graphql/profile.graphql";
 
 export default function AccountDelete () {
 

@@ -2,7 +2,7 @@ import { useLazyQuery } from '@apollo/client';
 import React, { useEffect, useState } from 'react'
 import { GetNewestProducts } from '../../../__generated__/GetNewestProducts';
 import { GetProducts_getProducts_data_products } from '../../../__generated__/GetProducts';
-import { GET_NEWEST_PRODUCT_QUERY } from '../../products/product.graphql';
+import { GET_NEWEST_PRODUCT_QUERY } from '../../../graphql/product.graphql';
 import ProductSlideSection from './ProductsSlideSection';
 
 const NewestProductSection = () => {

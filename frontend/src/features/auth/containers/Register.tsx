@@ -7,7 +7,7 @@ import FormError, { ErrorMessage } from '../../../shared/error/FormError';
 import Header from '../../../shared/Header';
 import { getErrorMessage } from '../../../utils/getErrorMessage';
 import { RegisterMutation, RegisterMutationVariables } from '../../../__generated__/RegisterMutation';
-import { REGISTER_MUTATION } from '../graphql/auth.graphql';
+import { REGISTER_MUTATION } from '../../../graphql/auth.graphql';
 
 export const Register = () => {
     const [errorMessage, setErrorMessage] = useState(null);

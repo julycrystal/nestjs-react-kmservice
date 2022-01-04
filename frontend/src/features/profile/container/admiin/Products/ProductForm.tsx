@@ -13,7 +13,7 @@ import {
     ADMIN_DELETE_PRODUCT_ENTRY,
     ADMIN_PRODUCT_ENTRY_LIST_QUERY,
     ADMIN_UPDATE_PRODUCT,
-} from "../../../graphql/admin.graphql";
+} from "../../../../../graphql/admin.graphql";
 import {
     GetProductEntriesByProduct,
     GetProductEntriesByProductVariables,
@@ -48,7 +48,7 @@ import {
 } from "../../../../../__generated__/ProductUpdate";
 import ProductEntryList from "../../../components/admin/product/ProductEntryList";
 import ProductImageComponent from "../../../components/admin/product/ProductImageComponent";
-import { GET_PRODUCT_QUERY } from "../../../../products/product.graphql";
+import { GET_PRODUCT_QUERY } from "../../../../../graphql/product.graphql";
 
 interface IProductForm {
     title: string;

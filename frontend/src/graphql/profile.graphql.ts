@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { ADDRESS_FRAGMENT, USER_FRAGMENT } from "../../auth/graphql/fragments";
+import { USER_FRAGMENT, ADDRESS_FRAGMENT } from "./fragments";
 
 export const DELETE_ACCOUNT_MUTATION = gql`
   mutation DeleteAccountMutation {

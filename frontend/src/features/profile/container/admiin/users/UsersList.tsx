@@ -6,7 +6,7 @@ import { ErrorMessage } from "../../../../../shared/error/FormError";
 import Header from "../../../../../shared/Header";
 import LoadingCmp from "../../../../../shared/loader/LoadingCmp";
 import { getErrorMessage } from "../../../../../utils/getErrorMessage";
-import { GET_USERS } from "../../../graphql/admin.graphql";
+import { GET_USERS } from "../../../../../graphql/admin.graphql";
 import Pagination from "react-js-pagination";
 import { GetUsers, GetUsersVariables, GetUsers_getUsers_data_users } from "../../../../../__generated__/GetUsers";
 import { useNavigate } from "react-router";

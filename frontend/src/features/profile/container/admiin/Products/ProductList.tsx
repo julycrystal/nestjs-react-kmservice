@@ -8,12 +8,12 @@ import Header from "../../../../../shared/Header"
 import LoadingCmp from "../../../../../shared/loader/LoadingCmp";
 import { getErrorMessage } from "../../../../../utils/getErrorMessage";
 import { GetProducts, GetProductsVariables, GetProducts_getProducts_data_products } from "../../../../../__generated__/GetProducts";
-import { ADMIN_DELETE_PRODUCT } from "../../../graphql/admin.graphql";
+import { ADMIN_DELETE_PRODUCT } from "../../../../../graphql/admin.graphql";
 import Pagination from "react-js-pagination";
 import { Link } from "react-router-dom";
 import Modal from "../../../../../shared/Modal";
 import { ProductDelete, ProductDeleteVariables } from "../../../../../__generated__/ProductDelete";
-import { PRODUCT_LIST_QUERY } from "../../../../products/product.graphql";
+import { PRODUCT_LIST_QUERY } from "../../../../../graphql/product.graphql";
 
 const ProductList = () => {
     const [products, setProducts] = useState<GetProducts_getProducts_data_products[]>([]);
