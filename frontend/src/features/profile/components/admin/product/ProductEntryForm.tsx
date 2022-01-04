@@ -25,7 +25,6 @@ const ProductEntryForm = ({ productId, callback, entry }: IProductEntryForm) => 
         reset,
         watch,
         setValue,
-        getValues,
         formState: { errors },
     } = useForm({
         mode: "onChange",
@@ -83,7 +82,7 @@ const ProductEntryForm = ({ productId, callback, entry }: IProductEntryForm) => 
             setValue('qty', entry.amount);
             onChange(new Date(entry.entryDate))
         }
-    }, [entry,])
+    }, [entry, setValue])
 
     return (
         <div>
