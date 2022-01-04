@@ -79,7 +79,7 @@ const ProductImageComponent = ({
                     >
                         {coverImage ? (
                             <div className="relative">
-                                <img src={coverImage} className="h-48" />
+                                <img src={coverImage} className="h-48" alt={product.title} />
                                 <div
                                     className="absolute -top-3 -right-1 cursor-pointer"
                                     onClick={() => setCoverImage(null)}
