@@ -9,9 +9,7 @@ import {
     faBox,
     faHeart,
     faAddressCard,
-    faUser,
     faUserFriends,
-    faBoxTissue,
     faBoxOpen,
     faBoxes,
 } from "@fortawesome/free-solid-svg-icons";
