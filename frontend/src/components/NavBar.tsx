@@ -32,7 +32,7 @@ const NavBar = () => {
 
     const Dropdown = () => {
         return <>
-            <div className="relative inline-block text-left">
+            <div className="relative inline-block text-left z-10">
                 <div>
                     <button onClick={() => setOpenDropdown(!openDropdown)} type="button" className="inline-flex justify-center w-full px-0 lg:px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none">
                         {user && user.name}
@@ -101,7 +101,7 @@ const NavBar = () => {
             <div className={`lg:hidden flex justify-between items-center px-3`}>
                 <h3 className="font-extrabold text-2xl tracking-widest">
                     <Link to="/">
-                        KVlog
+                        KM Commerce
                     </Link>
                 </h3>
                 <button className="outline-none mobile-menu-button" onClick={() => setOpen(!open)}>
