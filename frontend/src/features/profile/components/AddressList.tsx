@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client";
 import { faExclamationTriangle, faPencilAlt, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "../../../shared/Modal";
 import { getErrorMessage } from "../../../utils/getErrorMessage";
 import { AddressParts } from "../../../__generated__/AddressParts";

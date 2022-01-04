@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { faCheckCircle, faTimesCircle, faPencilAlt, faTrashAlt, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
@@ -55,7 +55,7 @@ const ProductList = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [])
+    }, [fetchProducts])
 
     const handleChange = (data: any) => {
         setPageNumber(data)
