@@ -27,3 +27,66 @@ export const PRODUCT_LIST_QUERY = gql`
     }
   }
 `;
+
+export const GET_PRODUCT_QUERY = gql`
+  query GetProduct($getProductInput: GetProductInput!) {
+    getProduct(getProductInput: $getProductInput) {
+      ok
+      product {
+        id
+        title
+        description
+        coverImage
+        discount
+        showRemaining
+        price
+        quantity
+        category {
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const GET_PUPULAR_PRODUCT_QUERY = gql`
+  query GetPopularProducts {
+    getPopularProducts {
+      ok
+      products {
+        id
+        title
+        description
+        coverImage
+        discount
+        showRemaining
+        price
+        quantity
+        category {
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const GET_NEWEST_PRODUCT_QUERY = gql`
+  query GetNewestProducts {
+    getNewestProducts {
+      ok
+      products {
+        id
+        title
+        description
+        coverImage
+        discount
+        showRemaining
+        price
+        quantity
+        category {
+          name
+        }
+      }
+    }
+  }
+`;
