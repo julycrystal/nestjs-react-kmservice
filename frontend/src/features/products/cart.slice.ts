@@ -11,12 +11,23 @@ export interface ICartItemState {
 
 export interface ICartState {
     items: ICartItemState[];
+    totalPrice: number;
+}
+
+
+const calculateTotalPrice = (cartItems: ICartItemState[]) => {
+    let totalPrice = 0;
+    cartItems.forEach(item => {
+        totalPrice += item.quantity * item.product.price;
+    })
+    return totalPrice;
 }
 
 const items = JSON.parse(localStorage.getItem("cartItems") || "[]");
 
 const initialState: ICartState = {
-    items
+    items,
+    totalPrice: calculateTotalPrice(items),
 };
 
 export const cartSlice = createSlice({
@@ -35,16 +46,19 @@ export const cartSlice = createSlice({
             } else {
                 state.items = [...state.items, item];
             }
+            state.totalPrice = calculateTotalPrice(state.items);
             localStorage.setItem("cartItems", JSON.stringify(state.items))
         },
         removeCartItem: (state, action: PayloadAction<ProductType>) => {
             state.items = state.items.filter(
                 (x) => x.product.id !== action.payload.id
             );
+            state.totalPrice = calculateTotalPrice(state.items);
             localStorage.setItem("cartItems", JSON.stringify(state.items))
         },
         clearCart: (state) => {
             state.items = [];
+            state.totalPrice = 0;
             localStorage.setItem("cartItems", JSON.stringify(state.items))
         },
     },
