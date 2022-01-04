@@ -1,6 +1,4 @@
-import { faBox } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 import { GetAddresses_getAddresses_addresses } from "../../../__generated__/GetAddresses";
