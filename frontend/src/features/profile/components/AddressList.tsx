@@ -2,11 +2,11 @@ import { useMutation } from "@apollo/client";
 import { faExclamationTriangle, faPencilAlt, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { DELETE_ADDRESS_MUTATION } from "../../../graphql/profile.graphql";
 import Modal from "../../../shared/Modal";
 import { getErrorMessage } from "../../../utils/getErrorMessage";
 import { AddressParts } from "../../../__generated__/AddressParts";
 import { DeleteAddressMutation, DeleteAddressMutationVariables } from "../../../__generated__/DeleteAddressMutation";
-import { DELETE_ADDRESS_MUTATION } from "../graphql/profile.graphql";
 
 interface IAddressListProps {
     addresses: AddressParts[],

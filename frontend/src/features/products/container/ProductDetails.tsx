@@ -15,7 +15,7 @@ import {
     GetProductVariables,
     GetProduct_getProduct_product,
 } from "../../../__generated__/GetProduct";
-import { GET_PRODUCT_QUERY } from "../product.graphql";
+import { GET_PRODUCT_QUERY } from "../../../graphql/product.graphql";
 import Interweave from "interweave";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, removeCartItem } from "../cart.slice";

@@ -2,7 +2,7 @@ import { useLazyQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { Spinner } from "../../../shared/loader";
 import { GetProducts, GetProductsVariables, GetProducts_getProducts_data_products } from "../../../__generated__/GetProducts";
-import { PRODUCT_LIST_QUERY } from "../product.graphql";
+import { PRODUCT_LIST_QUERY } from "../../../graphql/product.graphql";
 import Pagination from "react-js-pagination";
 import ProductItem from "../components/ProductItem";
 import LeftSide from "../components/LeftSide";
