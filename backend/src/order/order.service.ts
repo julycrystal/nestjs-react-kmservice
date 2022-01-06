@@ -152,18 +152,36 @@ export class OrderService {
       }
     }
   }
+  async getOrder (
+    user: User,
+    { orderId }: GetOrderInput
+  ): Promise<GetOrderOutput> {
+    try {
+      const order = await this.orderRepository.findOne(
+        { id: orderId },
+        {
+          relations: [
+            'customer',
+            'orderItems',
+            'billingAddress',
+            'deliveryAddress',
+          ],
+        }
+      )
+      if (user.role === UserRole.User && user.id !== order.customer.id) {
+        throw new HttpException("Order not found.", HttpStatus.NOT_FOUND)
       }
-      await this.orderRepository.update(order.id, { status });
       return {
         ok: true,
+        order,
       }
     } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
+      if (error.name && error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Cannot create order."
+        error: 'Cannot get order.',
       }
     }
   }

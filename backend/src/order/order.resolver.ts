@@ -48,4 +48,12 @@ export class OrderResolver {
     return this.orderService.updatePaymentStatus(updatePaymentStatusInput)
   }
 
+  @Query(() => GetOrderOutput)
+  @Role(['Admin', 'User'])
+  getOrder (
+    @AuthUser() user: User,
+    @Args('getOrderInput') getOrderInput: GetOrderInput
+  ): Promise<GetOrderOutput> {
+    return this.orderService.getOrder(user, getOrderInput)
+  }
 }
