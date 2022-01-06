@@ -112,7 +112,7 @@ const OrderConfirmation = ({
     const InfoConfirmation = () => {
         return (
             <div className="flex flex-col space-y-8 shadow-xl bg-white my-4 px-8 py-8">
-                <div className="flex lg:flex-row flex-col w-full lg:space-x-8 space-y-8">
+                <div className="flex lg:flex-row flex-col w-full lg:space-x-8 lg:space-y-0 space-y-8">
                     <div className="lg:w-1/2 flex flex-col items-start">
                         <h1 className="text-lg">Your Information</h1>
                         <hr className="border-black border-dotted w-full my-3" />
