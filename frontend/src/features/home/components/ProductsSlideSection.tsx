@@ -16,9 +16,10 @@ SwiperCore.use([Pagination]);
 interface IProductSlideSectionProps {
     products: GetProducts_getProducts_data_products[],
     title: string;
+    minItems?: number;
 }
 
-const ProductSlideSection = ({ products, title }: IProductSlideSectionProps) => {
+const ProductSlideSection = ({ products, title, minItems = 5 }: IProductSlideSectionProps) => {
     const isDesktop = useMediaQuery({
         query: '(min-width: 1024px)'
     });
@@ -27,7 +28,7 @@ const ProductSlideSection = ({ products, title }: IProductSlideSectionProps) => 
             <p className="px-2 my-2 font-bold text-xl">{title}</p>
             <div>
                 <Swiper
-                    slidesPerView={isDesktop ? 5 : 1}
+                    slidesPerView={isDesktop ? minItems : 1}
                     spaceBetween={30}
                     navigation={true}
                     className="mySwiper"

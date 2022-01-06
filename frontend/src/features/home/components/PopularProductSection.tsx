@@ -5,7 +5,11 @@ import { GetProducts_getProducts_data_products } from "../../../__generated__/Ge
 import { GET_PUPULAR_PRODUCT_QUERY } from "../../../graphql/product.graphql";
 import ProductSlideSection from "./ProductsSlideSection";
 
-const PopularProductSection = () => {
+interface IPopularProductSectionProps {
+    minItems?: number;
+}
+
+const PopularProductSection = ({ minItems = 5 }: IPopularProductSectionProps) => {
     const [popularProducts, setPopularProducts] = useState<GetProducts_getProducts_data_products[]>([]);
 
     const [fetchPopularProducts] = useLazyQuery<GetPopularProducts, null>(
@@ -28,7 +32,7 @@ const PopularProductSection = () => {
     }, [fetchPopularProducts,])
 
     return (
-        <ProductSlideSection products={popularProducts} title="Popular Proudcts" />
+        <ProductSlideSection products={popularProducts} title="Popular Proudcts" minItems={minItems} />
     )
 }
 
