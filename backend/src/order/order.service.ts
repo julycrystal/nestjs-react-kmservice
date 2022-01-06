@@ -1,14 +1,21 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from '../product/entities/product.entity';
-import { Address } from '../profile/entities/address.entity';
-import { User } from '../user/entities/user.entity';
-import { Repository } from 'typeorm';
-import { CreateOrderInput, CreateOrderOutput } from './dto/create-order.dto';
-import { MyOrdersOutput } from './dto/my-orders.dto';
-import { OrdersOutput } from './dto/orders.dto';
-import { UpdateOrderStatusInput, UpdateOrderStatusOutput } from './dto/update-order-status.input';
-import { Order, OrderItem } from './entities/order.entity';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Product } from '../product/entities/product.entity'
+import { Address } from '../profile/entities/address.entity'
+import { User, UserRole } from '../user/entities/user.entity'
+import { Repository } from 'typeorm'
+import { CreateOrderInput, CreateOrderOutput } from './dto/create-order.dto'
+import { MyOrdersOutput } from './dto/my-orders.dto'
+import { OrdersOutput } from './dto/orders.dto'
+import {
+  UpdateOrderStatusInput,
+  UpdateOrderStatusOutput,
+} from './dto/update-order-status.input'
+import { Order, OrderItem, OrderStatus } from './entities/order.entity'
+import { PaginationInput } from 'src/common/dtos/pagination.output'
+import { GetOrderInput, GetOrderOutput } from './dto/get-order.dto'
+import { CancelOrderInput, CancelOrderOutput } from './dto/cancel-order.dto'
+import { UpdatePaymentStatusInput, UpdatePaymentStatusOutput } from './dto/update-payment.dto'
 
 @Injectable()
 export class OrderService {
@@ -20,30 +27,48 @@ export class OrderService {
     @InjectRepository(Address)
     private readonly adddressRepository: Repository<Address>,
     @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
+    private readonly productRepository: Repository<Product>
   ) { }
 
   async create (
     { billingAddressId, deliveryAddressId, orderItems }: CreateOrderInput,
-    user: User,
+    user: User
   ): Promise<CreateOrderOutput> {
-    let savedOrder: Order;
+    let savedOrder: Order
     try {
-      const billingAddress = await this.adddressRepository.findOne({ id: billingAddressId })
-      const deliveryAddress = await this.adddressRepository.findOne({ id: deliveryAddressId })
+      const billingAddress = await this.adddressRepository.findOne({
+        id: billingAddressId,
+      })
+      const deliveryAddress = await this.adddressRepository.findOne({
+        id: deliveryAddressId,
+      })
       if (!billingAddress) {
-        throw new HttpException("Billing Address does not exists.", HttpStatus.NOT_FOUND)
+        throw new HttpException(
+          'Billing Address does not exists.',
+          HttpStatus.NOT_FOUND
+        )
       }
       if (!deliveryAddress) {
-        throw new HttpException("Delivery Address does not exists.", HttpStatus.NOT_FOUND)
+        throw new HttpException(
+          'Delivery Address does not exists.',
+          HttpStatus.NOT_FOUND
+        )
       }
       for (const orderItem of orderItems) {
-        const product = await this.productRepository.findOne({ id: orderItem.productId });
+        const product = await this.productRepository.findOne({
+          id: orderItem.productId,
+        })
         if (!product) {
-          throw new HttpException("Product does not exists.", HttpStatus.NOT_FOUND)
+          throw new HttpException(
+            'Product does not exists.',
+            HttpStatus.NOT_FOUND
+          )
         }
         if (product.quantity < orderItem.quantity) {
-          throw new HttpException("Insufficient products in storage to place this order .", HttpStatus.BAD_REQUEST)
+          throw new HttpException(
+            'Insufficient products in storage to place this order .',
+            HttpStatus.BAD_REQUEST
+          )
         }
       }
 
@@ -52,13 +77,15 @@ export class OrderService {
         deliveryAddress,
         customer: user,
       })
-      savedOrder = await this.orderRepository.save(order);
+      savedOrder = await this.orderRepository.save(order)
       // order finished
 
-      let totalAmount = 0;
+      let totalAmount = 0
       for (const orderItem of orderItems) {
-        const product = await this.productRepository.findOne({ id: orderItem.productId });
-        const discount = orderItem.discount || 0;
+        const product = await this.productRepository.findOne({
+          id: orderItem.productId,
+        })
+        const discount = orderItem.discount || 0
         const orderItem2Save = await this.orderItemRepository.create({
           order: savedOrder,
           productName: product.title,
@@ -66,11 +93,12 @@ export class OrderService {
           discount: discount,
           quantity: orderItem.quantity,
         })
-        totalAmount += product.price * orderItem.quantity - (discount * orderItem.quantity);
+        totalAmount +=
+          product.price * orderItem.quantity - discount * orderItem.quantity
 
         // reduce product total amount
-        const quantity = product.quantity - orderItem.quantity;
-        await this.productRepository.update(product.id, { quantity });
+        const quantity = product.quantity - orderItem.quantity
+        await this.productRepository.update(product.id, { quantity })
 
         // save order item
         await this.orderItemRepository.save(orderItem2Save)
@@ -84,52 +112,125 @@ export class OrderService {
       if (savedOrder) {
         await this.orderRepository.delete({ id: savedOrder.id })
       }
-      if (error.name && error.name === "HttpException") {
-        throw error;
+      if (error.name && error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Cannot create order."
+        error: 'Cannot create order.',
       }
     }
   }
 
-  async orders (): Promise<OrdersOutput> {
+  async orders ({
+    limit = 10,
+    pageNumber = 1,
+  }: PaginationInput): Promise<OrdersOutput> {
     try {
-      const orders = await this.orderRepository.find({ relations: ['orderItems'] })
+      const totalOrders = await this.orderRepository.count()
+      const totalPages = Math.ceil(totalOrders / limit)
+      if (pageNumber > totalPages) {
+        pageNumber = totalPages
+      }
+      const orders = await this.orderRepository.find({
+        relations: ['orderItems', 'customer'],
+        take: limit,
+        order: {
+          id: 'DESC',
+        },
+        skip: pageNumber * limit - limit,
+      })
+
       return {
-        orders,
+        data: {
+          orders,
+          limit,
+          totalPages,
+          currentPage: pageNumber,
+          totalItems: totalOrders,
+          currentPageItems: orders.length,
+        },
         ok: true,
       }
     } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
+      if (error.name && error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Cannot create order."
+        error: 'Cannot get orders.',
       }
     }
   }
 
-  async myOrders (user: User): Promise<MyOrdersOutput> {
+  async myOrders (
+    user: User,
+    { limit = 10, pageNumber = 1 }: PaginationInput
+  ): Promise<MyOrdersOutput> {
     try {
-      const orders = await this.orderRepository.find({ where: { customer: user }, relations: ['orderItems',] })
+      const totalOrders = await this.orderRepository.count({
+        where: { customer: user },
+      })
+      const totalPages = Math.ceil(totalOrders / limit)
+      if (pageNumber > totalPages) {
+        pageNumber = totalPages
+      }
+      const orders = await this.orderRepository.find({
+        where: { customer: user },
+        relations: ['orderItems', 'customer'],
+        take: limit,
+        order: {
+          id: 'DESC',
+        },
+        skip: pageNumber * limit - limit,
+      })
       return {
-        orders,
+        data: {
+          orders,
+          limit,
+          totalPages,
+          currentPage: pageNumber,
+          totalItems: totalOrders,
+          currentPageItems: orders.length,
+        },
         ok: true,
       }
     } catch (error) {
-      if (error.name && error.name === "HttpException") {
-        throw error;
+      if (error.name && error.name === 'HttpException') {
+        throw error
       }
       return {
         ok: false,
-        error: "Cannot create order."
+        error: 'Cannot get orders.',
       }
     }
   }
 
+  async updateStatus ({
+    orderId,
+    status,
+  }: UpdateOrderStatusInput): Promise<UpdateOrderStatusOutput> {
+    try {
+      const order = await this.orderRepository.findOne({ id: orderId })
+      if (!order) {
+        throw new HttpException('order not found .', HttpStatus.NOT_FOUND)
+      }
+      await this.orderRepository.update(order.id, { status })
+      return {
+        ok: true,
+      }
+    } catch (error) {
+      if (error.name && error.name === 'HttpException') {
+        throw error
+      }
+      return {
+        ok: false,
+        error: 'Cannot update order.',
+      }
+    }
+  }
+
+  async updatePaymentStatus ({
     orderId,
     paid,
   }: UpdatePaymentStatusInput): Promise<UpdatePaymentStatusOutput> {
@@ -175,6 +276,7 @@ export class OrderService {
       }
     }
   }
+
   async getOrder (
     user: User,
     { orderId }: GetOrderInput
