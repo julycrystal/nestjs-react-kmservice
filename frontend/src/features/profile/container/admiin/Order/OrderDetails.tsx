@@ -1,4 +1,5 @@
 import { useLazyQuery } from "@apollo/client";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { GET_ORDER } from "../../../../../graphql/order.graphql";
@@ -83,18 +84,18 @@ const OrderDetails = ({ isAdmin }: IOrderDetailsProps) => {
     }
 
     return (
-        <div id="accountPanel" className="px-10 py-5 text-gray-900">
+        <div id="accountPanel" className="lg:px-10 px-4 py-5 text-gray-900">
             <Header title="Orders" description="Orders." />
             <div className="flex items-center mb-4 space-x-4">
                 <h3 className="text-2xl font-bold">Order Details </h3>
                 <p>#{order.id}</p>
             </div>
             <hr className="border-black" />
-            <div className="space-x-6 mt-6 flex">
-                <div className="w-1/2">
+            <div className="lg:space-x-6 space-x-0 space-y-6 lg:space-y-0 mt-6 flex lg:flex-row flex-col">
+                <div className="lg:w-1/2 w-full">
                     <UserDetails user={order.customer} />
                 </div>
-                <div className="w-1/2">
+                <div className="lg:w-1/2 w-full">
                     <AddressDetails
                         deliveryAddress={order.deliveryAddress}
                         billingAddress={order.billingAddress}
@@ -108,14 +109,14 @@ const OrderDetails = ({ isAdmin }: IOrderDetailsProps) => {
                     <hr className="border-gray-500 my-6" />
                 </> :
                 <>
-                    <UserAction />
+                    <UserAction status={order.status} orderId={order.id} refetch={refetchQuery} />
                     <hr className="border-gray-500 my-6" />
                 </>
             }
-            <div className="ml-4 space-y-8">
+            <div className="lg:ml-4 space-y-8">
                 <h1 className="font-bold text-xl">Order Info</h1>
                 <div className="w-full space-y-20">
-                    <div className="w-1/3 ml-3 space-y-6">
+                    <div className="lg:w-1/3 ml-3 space-y-6">
                         <div className="flex justify-between items-center">
                             <p>Status</p>
                             <p className="bg-gray-800 text-white font-bold px-3 py-2">{order.status}</p>
@@ -123,6 +124,10 @@ const OrderDetails = ({ isAdmin }: IOrderDetailsProps) => {
                         <div className="flex justify-between items-center">
                             <p>Paid</p>
                             <p className={`bg-${order.paid ? "green" : "red"}-500 text-white font-bold px-3 py-2`}>{order.paid ? "PAID" : "UNPAID"}</p>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <p>Order At</p>
+                            <p className={`font-bold px-3 py-2`}>{moment(order.createdAt).format("MMM Do YYYY")}</p>
                         </div>
                     </div>
                     <div className="w-full">
@@ -135,7 +140,7 @@ const OrderDetails = ({ isAdmin }: IOrderDetailsProps) => {
                     <OrderItemInfo orderItems={order.orderItems} />
                 </div>
             </div>
-            <button className="bg-black text-white px-4 py-2 mt-4" onClick={() => navigate("/profile/admin/orders")}>
+            <button className="bg-black text-white px-4 py-2 mt-4" onClick={() => isAdmin ? navigate("/profile/admin/orders") : navigate("/profile/orders")}>
                 Back to Orders
             </button>
         </div>

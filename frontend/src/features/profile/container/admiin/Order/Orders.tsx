@@ -61,7 +61,7 @@ const Orders = () => {
 
 
     return (
-        <div id="accountPanel" className="px-10 py-5 text-gray-900">
+        <div id="accountPanel" className="lg:px-10 px-4 py-5 text-gray-900">
             <Header title="Orders" description="Orders." />
             <div className="flex justify-between items-center">
                 <h3 className="text-2xl mb-4 font-bold">Order List</h3>

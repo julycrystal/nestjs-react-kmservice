@@ -15,7 +15,7 @@ const OrderList = ({ orders }: IOrderListProps) => {
             <thead>
                 <tr className="text-center bg-black text-white font-bold text-sm uppercase">
                     <td className="pl-2 py-3">#</td>
-                    <td className="">Date</td>
+                    <td className="hidden lg:block">Date</td>
                     <td className="">Total Price</td>
                     <td className="">Customer</td>
                     <td className="">Status</td>
@@ -25,9 +25,9 @@ const OrderList = ({ orders }: IOrderListProps) => {
             </thead>
             <tbody>
                 {orders.length > 0 && orders.map((order) => {
-                    return (<tr key={order.id} className="w-full text-center border-b-2 text-sm">
+                    return (<tr key={order.id} className="w-full text-center border-b-2 text-sm" onClick={() => navigate(`${order.id}`)}>
                         <td className=" py-4">{order.id}</td>
-                        <td className="">{moment(order.createdAt).format("MMM Do YYYY")}</td>
+                        <td className="hidden lg:block">{moment(order.createdAt).format("MMM Do YYYY")}</td>
                         <td className="">{order.totalAmount}</td>
                         <td className="">{order.customer.name}</td>
                         <td className="">{order.status}</td>
