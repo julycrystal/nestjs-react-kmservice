@@ -64,8 +64,8 @@ const AdminAction = ({ paid, status, orderId, refetch }: IAdminActionProps) => {
     return (
         <div className="ml-4">
             <h1 className="font-bold text-xl">Admin Actions</h1>
-            <div className="flex space-x-6">
-                <div className="text-sm mt-3 ml-3 flex flex-col w-1/2">
+            <div className="flex lg:flex-row flex-col lg:space-x-6 space-x-0 lg:space-y-0 space-y-6">
+                <div className="text-sm mt-3 lg:ml-3 flex flex-col lg:w-1/2">
                     <div>
                         <h1>Payment Status</h1>
                         <hr />
@@ -78,14 +78,18 @@ const AdminAction = ({ paid, status, orderId, refetch }: IAdminActionProps) => {
                         <button onClick={updatePaymentHandler} disabled={!paymentStatusValid()} className={`${paymentStatusValid() ? "bg-black" : "bg-gray-500"} text-white font-bold px-3 py-1 uppercase w-fit`}>update</button>
                     </div>
                 </div>
-                <div className="text-sm mt-3 ml-3 flex flex-col w-1/2">
+                <div className="text-sm mt-3 ml-3 flex flex-col lg:w-1/2">
                     <div>
                         <h1>
                             Update Status</h1>
                         <hr />
                     </div>
                     <div className="flex space-x-6 mt-4">
-                        <select value={orderStatus} onChange={(event: any) => { setOrderStatus(event.target.value) }}>
+                        <select
+                            disabled={status === OrderStatus.CANCELLED}
+                            value={orderStatus} onChange={(event: any) => {
+                                setOrderStatus(event.target.value)
+                            }}>
                             <option value={OrderStatus.PENDING}>Pending</option>
                             <option value={OrderStatus.ORDER_CONFIRMED}>Order Confirmed</option>
                             <option value={OrderStatus.PICKED_BY_COURIER}>Picked By Courier</option>

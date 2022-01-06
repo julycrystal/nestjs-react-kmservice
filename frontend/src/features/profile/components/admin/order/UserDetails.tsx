@@ -5,7 +5,7 @@ interface IUserDetailsProps {
 }
 const UserDetails = ({ user }: IUserDetailsProps) => {
     return (
-        <div className="ml-8">
+        <div className="lg:ml-8 ml-3">
             <h1 className="mb-3 text-lg text-gray-700 font-bold">User Details</h1>
             <hr className="border-gray-500" />
             <div className="space-y-4 text-sm mt-8">

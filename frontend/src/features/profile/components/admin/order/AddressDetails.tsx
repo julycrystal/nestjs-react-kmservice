@@ -40,7 +40,7 @@ const AddressDetails = ({
     }
 
     return (
-        <div className="ml-8">
+        <div className="lg:ml-8">
             <h1 className="mb-3 text-lg text-gray-700 font-bold">Address Details</h1>
             <hr className="border-gray-500" />
             <div className="space-y-4 text-sm mt-4">
