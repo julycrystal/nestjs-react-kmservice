@@ -40,6 +40,16 @@ export class OrderResolver {
   updateOrderStatus (
     @Args('updateOrderInput') updateOrderInput: UpdateOrderStatusInput,
   ): Promise<UpdateOrderStatusOutput> {
+
+  @Mutation(() => CancelOrderOutput)
+  @Role(['User'])
+  cancelOrder (
+    @Args('cancelOrderInput') cancelOrderInput: CancelOrderInput,
+    @AuthUser() user: User,
+  ): Promise<CancelOrderOutput> {
+    return this.orderService.cancelOrder(cancelOrderInput, user)
+  }
+
   @Mutation(() => UpdatePaymentStatusOutput)
   @Role(['Admin'])
   updatePaymentStatus (

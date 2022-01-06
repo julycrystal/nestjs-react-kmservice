@@ -152,6 +152,29 @@ export class OrderService {
       }
     }
   }
+
+  async cancelOrder ({
+    orderId,
+  }: CancelOrderInput, user: User): Promise<CancelOrderOutput> {
+    try {
+      const order = await this.orderRepository.findOne({ id: orderId }, { relations: ['customer'] })
+      if (!order || (order.customer.id !== user.id)) {
+        throw new HttpException('order not found .', HttpStatus.NOT_FOUND)
+      }
+      await this.orderRepository.update(order.id, { status: OrderStatus.CANCELLED })
+      return {
+        ok: true,
+      }
+    } catch (error) {
+      if (error.name && error.name === 'HttpException') {
+        throw error
+      }
+      return {
+        ok: false,
+        error: 'Cannot update order.',
+      }
+    }
+  }
   async getOrder (
     user: User,
     { orderId }: GetOrderInput
