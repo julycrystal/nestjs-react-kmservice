@@ -36,7 +36,7 @@ export default function ChangePassword () {
             if (changePassword.ok) {
                 removeToken();
                 dispatch(logout());
-                navigate("/login");
+                navigate("/auth/login");
             }
         },
         onError: (error) => {
