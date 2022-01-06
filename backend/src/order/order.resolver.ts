@@ -40,7 +40,12 @@ export class OrderResolver {
   updateOrderStatus (
     @Args('updateOrderInput') updateOrderInput: UpdateOrderStatusInput,
   ): Promise<UpdateOrderStatusOutput> {
-    return this.orderService.updateStatus(updateOrderInput);
+  @Mutation(() => UpdatePaymentStatusOutput)
+  @Role(['Admin'])
+  updatePaymentStatus (
+    @Args('updatePaymentStatusInput') updatePaymentStatusInput: UpdatePaymentStatusInput,
+  ): Promise<UpdatePaymentStatusOutput> {
+    return this.orderService.updatePaymentStatus(updatePaymentStatusInput)
   }
 
 }

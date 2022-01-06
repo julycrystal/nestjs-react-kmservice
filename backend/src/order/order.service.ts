@@ -130,13 +130,28 @@ export class OrderService {
     }
   }
 
-  async updateStatus (
-    { orderId, status }: UpdateOrderStatusInput
-  ): Promise<UpdateOrderStatusOutput> {
+    orderId,
+    paid,
+  }: UpdatePaymentStatusInput): Promise<UpdatePaymentStatusOutput> {
     try {
-      const order = await this.orderRepository.findOne({ id: orderId });
+      const order = await this.orderRepository.findOne({ id: orderId })
       if (!order) {
-        throw new HttpException("order not found .", HttpStatus.NOT_FOUND)
+        throw new HttpException('order not found .', HttpStatus.NOT_FOUND)
+      }
+      await this.orderRepository.update(order.id, { paid })
+      return {
+        ok: true,
+      }
+    } catch (error) {
+      if (error.name && error.name === 'HttpException') {
+        throw error
+      }
+      return {
+        ok: false,
+        error: 'Cannot update order.',
+      }
+    }
+  }
       }
       await this.orderRepository.update(order.id, { status });
       return {
