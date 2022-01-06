@@ -8,12 +8,11 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 export enum OrderStatus {
   PENDING = "PENDING",
-  DELIVERED = "DELIVERED",
-  OUT_FOR_DELIVERY = "OUT_FOR_DELIVERY",
-  RECIEVED = "RECIEVED",
+  ORDER_CONFIRMED = "ORDER_CONFIRMED",
+  PICKED_BY_COURIER = "PICKED_BY_COURIER",
+  ON_THE_WAY = "ON_THE_WAY",
   CANCELLED = "CANCELLED",
-  COMPLETED = "COMPLETED",
-  REFUNDED = "REFUNDED",
+  DELIVERED = "DELIVERED",
 }
 
 
@@ -30,7 +29,7 @@ registerEnumType(PaymentMethods, { name: "PaymentMethods" });
 @Entity()
 export class Order extends CoreEntity {
 
-  @Field(() => User)
+  @Field(() => User, { nullable: false })
   @ManyToOne(() => User, user => user.orders, { onDelete: 'CASCADE' })
   customer: User;
 
