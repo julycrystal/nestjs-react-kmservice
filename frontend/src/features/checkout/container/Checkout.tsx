@@ -81,7 +81,7 @@ const Checkout = () => {
 
     const AddressComponent = () => (
         <div>
-            <form className="mt-8 lg:w-4/6 lg:mx-auto mx-2 flex justify-between space-x-4">
+            <div className="mt-8 lg:w-4/6 lg:mx-auto mx-2 flex justify-between space-x-4" onSubmit={(event: any) => event?.preventDefault()}>
                 <Address
                     title="Billing Address"
                     name="billingAddress"
@@ -96,7 +96,7 @@ const Checkout = () => {
                     addresses={addresses}
                     callback={fetchAddresses}
                 />
-            </form>
+            </div>
         </div>
     );
 
