@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const PageNotFound = () => {
     return (<div className="items-center justify-center">
-        <div className="bg-white shadow-lg mt-16 lg:w-2/5 mx-6 lg:mx-auto">
+        <div className="bg-white shadow-lg my-16 lg:w-2/5 mx-6 lg:mx-auto">
             <div className="flex lg:flex-row flex-col lg:p-10 p-6 items-center justify-center lg:space-x-6">
                 <div>
                     <FontAwesomeIcon icon={faFrown} className="lg:text-9xl text-6xl" />

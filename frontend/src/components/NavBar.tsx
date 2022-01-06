@@ -78,7 +78,7 @@ const NavBar = () => {
                     </div>
                 </div>
                 <div className="hidden lg:flex items-center">
-                    <Link to="/cart" className="relative">
+                    <Link to="/cart" className="relative mr-4">
                         <FontAwesomeIcon icon={faCartPlus} />
                         <div className="absolute -top-3 -right-2 text-xs bg-red-500 text-white font-bold rounded-lg px-1 pt-0.5">
                             <p>{cart.items?.length}</p>
