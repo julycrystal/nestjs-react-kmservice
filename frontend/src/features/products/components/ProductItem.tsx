@@ -1,4 +1,4 @@
-import { faCartPlus, faEye, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -8,8 +8,9 @@ import { removeCartItem, addToCart } from "../cart.slice";
 
 interface IProductItem {
     product: GetProducts_getProducts_data_products;
+    className?: string;
 }
-const ProductItem = ({ product }: IProductItem) => {
+const ProductItem = ({ product, className }: IProductItem) => {
     const dispatch = useDispatch();
     const cartItems = useSelector((state: RootState) => state.cart.items);
 
@@ -49,7 +50,7 @@ const ProductItem = ({ product }: IProductItem) => {
     }
 
     return (
-        <div className="lg:w-1/4 md:w-1/2 w-full px-2 mb-6">
+        <div className={className ? className : "lg:w-1/4 md:w-1/2 w-full px-2 mb-6"}>
             <div className="bg-white shadow-xl pb-5">
                 <div className="cursor-pointer" onClick={() => detailClickHandler(product.id)}>
                     {product.coverImage ? (
