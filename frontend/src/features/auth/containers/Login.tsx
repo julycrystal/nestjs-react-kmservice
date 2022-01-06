@@ -123,7 +123,7 @@ export const Login = () => {
                 />
                 {/* when sending request */}
                 <Link
-                    to="/register"
+                    to="/auth/register"
                     className="text-center border-black border-2 text-black py-2"
                 >
                     {" "}

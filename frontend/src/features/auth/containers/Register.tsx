@@ -18,7 +18,7 @@ export const Register = () => {
     const [mutate, { loading: isLoading }] = useMutation<RegisterMutation, RegisterMutationVariables>(REGISTER_MUTATION, {
         onCompleted: ({ register: data }) => {
             if (data.ok) {
-                navigate('/login')
+                navigate('/auth/login')
             }
         },
         onError: (error) => {
@@ -27,7 +27,7 @@ export const Register = () => {
     })
 
     const onSubmit = () => {
-        mutate({ variables: { ...getValues() } })
+        mutate({ variables: { createUserInput: { ...getValues() } } })
     }
 
     const isValid = () => {
@@ -101,7 +101,7 @@ export const Register = () => {
                     <span className="font-black mx-1 mt-1">OR</span>
                     <div className="h-4 border-gray-500 border-b-2 w-1/2"></div>
                 </div>
-                <Link to="/login" className="mt-4 text-center border-black border-2 text-black py-2 h-10"> LOGIN </Link>
+                <Link to="/auth/login" className="mt-4 text-center border-black border-2 text-black py-2 h-10"> LOGIN </Link>
             </form>
         </div>
     )
