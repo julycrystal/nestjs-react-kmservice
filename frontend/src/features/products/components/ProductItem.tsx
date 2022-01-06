@@ -1,4 +1,5 @@
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as OutlineHeart } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -16,7 +17,7 @@ const ProductItem = ({ product, className }: IProductItem) => {
 
     const navigate = useNavigate();
     const detailClickHandler = (id: number) => {
-        navigate(`${id}`);
+        navigate(`/products/${id}`);
     };
 
     const isInCart = () => {
@@ -61,7 +62,7 @@ const ProductItem = ({ product, className }: IProductItem) => {
                         />
                     ) : (
                         <img
-                            src="place-holder.png"
+                            src="/place-holder.png"
                             alt={product.title}
                             className="h-60 w-full"
                         />
@@ -80,8 +81,12 @@ const ProductItem = ({ product, className }: IProductItem) => {
                     <p className="">{product.title}</p>
                     <p className="font-bold text-lg">$ {product.price}</p>
                 </div>
-                <div className="flex space-x-2 mt-3 px-4">
+                <div className="flex items-center space-x-2 mt-3 px-4">
                     {getActionButton()}
+                    <button className="w-1/5 border-black border-2 pt-2 py-0.5">
+                        {/* <FontAwesomeIcon className="" icon={faHeart} /> */}
+                        <FontAwesomeIcon className="" icon={OutlineHeart} />
+                    </button>
                 </div>
             </div>
         </div>
