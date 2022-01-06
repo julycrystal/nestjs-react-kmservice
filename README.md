@@ -1,10 +1,14 @@
-# KM Blog - Multiuser blog
+# KM Commerce - ECommerce Web App
 Simple ecommerce app created using nestjs and reactjs.
 
 ## Features
 - Login / Register
 - Create / Upate / Delete product for admin
 - review a product
+- Order
+- Order Tracking
+- Download INvoice
+- Cart
 - Browse product by category
 - Responsiveness
 
@@ -13,7 +17,6 @@ Simple ecommerce app created using nestjs and reactjs.
 * [ ]  Email Confirmation
 * [ ]  payment integration
 * [ ]  backend unittesting
-* [ ]  Frontend implementation
 * [ ]  Frontend Testing
 
 ## Technologies
