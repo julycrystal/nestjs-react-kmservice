@@ -179,7 +179,6 @@ const ProductForm = () => {
         fetchPolicy: "no-cache",
         onCompleted: ({ deleteProductEntry }) => {
             const { ok } = deleteProductEntry;
-            console.log(deleteProductEntry);
             if (ok && product) {
                 fetchProductEntries({
                     variables: {
