@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart, removeCartItem } from "../cart.slice";
 import { RootState } from "../../../app/store";
 import Header from "../../../shared/Header";
+import PopularProductSection from "../../home/components/PopularProductSection";
 
 const ProductDetails = () => {
 
@@ -113,6 +114,8 @@ const ProductDetails = () => {
         dispatch(addToCart({ product, quantity: productCount }))
     }
 
+    const relatedProductsSection = () => { }
+
     return (
         <div className="lg:w-4/5 lg:mx-auto mx-4 my-6">
             <Header title={product.title} description={product.description} />
@@ -200,6 +203,9 @@ const ProductDetails = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className="mt-8">
+                <PopularProductSection minItems={4} />
             </div>
         </div>
     );
