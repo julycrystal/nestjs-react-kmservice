@@ -144,7 +144,6 @@ const Checkout = () => {
 
     const isValid = () => {
         if (step === 1) {
-            console.log(deliveryAddress, billingAddress);
             const addresses = [deliveryAddress, billingAddress];
             return addresses.every((address) => address && address !== null);
         } else if (step === 2) {
