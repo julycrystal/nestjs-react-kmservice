@@ -1,4 +1,4 @@
-# KM Commerce - ECommerce Web App
+# KMService - ECommerce Web App
 Simple ecommerce app created using nestjs and reactjs.
 
 ## Features
@@ -11,13 +11,6 @@ Simple ecommerce app created using nestjs and reactjs.
 - Cart
 - Browse product by category
 - Responsiveness
-
-## Todo:
-* [ ]  Visitor count
-* [ ]  Email Confirmation
-* [ ]  payment integration
-* [ ]  backend unittesting
-* [ ]  Frontend Testing
 
 ## Technologies
 - NestJS
